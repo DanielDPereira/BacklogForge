@@ -72,8 +72,10 @@ O backend estará ativo e ouvindo requisições na porta **8080**: `http://local
 
 ### Rodando os Testes Automatizados do Backend:
 Para executar a suíte de testes unitários:
-```powershell
-java "-Dmaven.multiModuleProjectDirectory=c:\Users\Daniel\Documents\.Projetos\BacklogForge\backend" -classpath .mvn/wrapper/maven-wrapper.jar org.apache.maven.wrapper.MavenWrapperMain test
+```bash
+# Dentro do diretório backend:
+.\mvnw.cmd test     # Windows
+./mvnw test         # Linux/macOS
 ```
 
 ---

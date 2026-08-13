@@ -6,10 +6,10 @@
 
 Acesse os documentos detalhados sobre o projeto e a arquitetura:
 
-- 🏛️ **[Arquitetura e Decisões de Design (`architecture.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/architecture.md)** — Explicação da Clean Architecture, camadas Java/Spring Boot, React Frontend, engenharia de prompt e segurança de chaves.
-- 🚀 **[Guia de Configuração e Execução Local (`setup-and-execution.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/setup-and-execution.md)** — Passo a passo para configurar variáveis de ambiente (`.env`), compilar e rodar o Backend e Frontend.
-- 📡 **[Contratos de API REST e Schemas JSON (`api-contracts.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/api-contracts.md)** — Especificação detalhada dos endpoints, payloads de requisição, schemas JSON do `ProductBacklog` e tratamento de erros.
-- 📋 **[Product Backlog e Roadmap (`backlog.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/backlog.md)** — Épicos, User Stories, Tasks e status do roadmap MVP.
+- 🏛️ **[Arquitetura e Decisões de Design (`architecture.md`)](./architecture.md)** — Explicação da Clean Architecture, camadas Java/Spring Boot, React Frontend, engenharia de prompt e segurança de chaves.
+- 🚀 **[Guia de Configuração e Execução Local (`setup-and-execution.md`)](./setup-and-execution.md)** — Passo a passo para configurar variáveis de ambiente (`.env`), compilar e rodar o Backend e Frontend.
+- 📡 **[Contratos de API REST e Schemas JSON (`api-contracts.md`)](./api-contracts.md)** — Especificação detalhada dos endpoints, payloads de requisição, schemas JSON do `ProductBacklog` e tratamento de erros.
+- 📋 **[Product Backlog e Roadmap (`backlog.md`)](./backlog.md)** — Épicos, User Stories, Tasks e status do roadmap MVP.
 
 ---
 
