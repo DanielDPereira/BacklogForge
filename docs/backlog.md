@@ -18,12 +18,12 @@
 
 **Tasks:**
 
-* [ ] Criar projeto Spring Boot.
-* [ ] Configurar Maven.
-* [ ] Configurar estrutura inicial de pacotes.
-* [ ] Configurar application properties.
-* [ ] Criar configuração básica de ambiente.
-* [ ] Validar execução da aplicação.
+* [x] Criar projeto Spring Boot.
+* [x] Configurar Maven.
+* [x] Configurar estrutura inicial de pacotes.
+* [x] Configurar application properties.
+* [x] Criar configuração básica de ambiente.
+* [x] Validar execução da aplicação.
 
 ---
 
@@ -43,12 +43,12 @@
 
 **Tasks:**
 
-* [ ] Adicionar dependências do Spring AI.
-* [ ] Configurar integração com Gemini.
-* [ ] Configurar variável de ambiente para a chave.
-* [ ] Criar serviço de comunicação com o modelo.
-* [ ] Criar teste inicial de integração.
-* [ ] Implementar tratamento básico de erros.
+* [x] Adicionar dependências do Spring AI.
+* [x] Configurar integração com Gemini.
+* [x] Configurar variável de ambiente para a chave.
+* [x] Criar serviço de comunicação com o modelo.
+* [x] Criar teste inicial de integração.
+* [x] Implementar tratamento básico de erros.
 
 ---
 
@@ -70,11 +70,11 @@
 
 **Tasks:**
 
-* [ ] Criar DTO de requisição.
-* [ ] Definir campos obrigatórios.
-* [ ] Implementar Bean Validation.
-* [ ] Definir limites válidos para os parâmetros.
-* [ ] Criar testes de validação.
+* [x] Criar DTO de requisição.
+* [x] Definir campos obrigatórios.
+* [x] Implementar Bean Validation.
+* [x] Definir limites válidos para os parâmetros.
+* [x] Criar testes de validação.
 
 ---
 
@@ -96,12 +96,12 @@
 
 **Tasks:**
 
-* [ ] Implementar recebimento multipart.
-* [ ] Validar extensão e tipo MIME.
-* [ ] Permitir múltiplos arquivos.
-* [ ] Extrair texto dos PDFs.
-* [ ] Tratar PDF inválido ou ilegível.
-* [ ] Criar testes para upload e extração.
+* [x] Implementar recebimento multipart.
+* [x] Validar extensão e tipo MIME.
+* [x] Permitir múltiplos arquivos.
+* [x] Extrair texto dos PDFs.
+* [x] Tratar PDF inválido ou ilegível.
+* [x] Criar testes para upload e extração.
 
 ---
 
@@ -121,11 +121,11 @@
 
 **Tasks:**
 
-* [ ] Adicionar campo de texto ao contrato.
-* [ ] Validar tamanho máximo.
-* [ ] Integrar texto ao contexto de geração.
-* [ ] Definir estrutura de contexto para o prompt.
-* [ ] Criar testes.
+* [x] Adicionar campo de texto ao contrato.
+* [x] Validar tamanho máximo.
+* [x] Integrar texto ao contexto de geração.
+* [x] Definir estrutura de contexto para o prompt.
+* [x] Criar testes.
 
 ---
 
@@ -145,12 +145,12 @@
 
 **Tasks:**
 
-* [ ] Criar serviço de consolidação.
-* [ ] Estruturar conteúdo dos documentos.
-* [ ] Estruturar informações adicionais.
-* [ ] Estruturar parâmetros.
-* [ ] Implementar controle de tamanho do contexto.
-* [ ] Criar testes.
+* [x] Criar serviço de consolidação.
+* [x] Estruturar conteúdo dos documentos.
+* [x] Estruturar informações adicionais.
+* [x] Estruturar parâmetros.
+* [x] Implementar controle de tamanho do contexto.
+* [x] Criar testes.
 
 ---
 
@@ -174,12 +174,12 @@
 
 **Tasks:**
 
-* [ ] Definir estrutura JSON.
-* [ ] Criar classes de domínio.
-* [ ] Definir enums.
-* [ ] Definir IDs padronizados.
-* [ ] Implementar serialização.
-* [ ] Documentar o contrato.
+* [x] Definir estrutura JSON.
+* [x] Criar classes de domínio.
+* [x] Definir enums.
+* [x] Definir IDs padronizados.
+* [x] Implementar serialização.
+* [x] Documentar o contrato.
 
 ---
 
@@ -203,14 +203,14 @@
 
 **Tasks:**
 
-* [ ] Criar prompt base.
-* [ ] Definir regras de geração.
-* [ ] Definir regras de decomposição.
-* [ ] Definir instruções de estimativa.
-* [ ] Definir regras de Sprint.
-* [ ] Definir instruções sobre tamanho da equipe.
-* [ ] Testar prompt com projetos diferentes.
-* [ ] Refinar prompt.
+* [x] Criar prompt base.
+* [x] Definir regras de geração.
+* [x] Definir regras de decomposição.
+* [x] Definir instruções de estimativa.
+* [x] Definir regras de Sprint.
+* [x] Definir instruções sobre tamanho da equipe.
+* [x] Testar prompt com projetos diferentes.
+* [x] Refinar prompt.
 
 ---
 
@@ -234,14 +234,14 @@
 
 **Tasks:**
 
-* [ ] Implementar serviço de geração.
-* [ ] Integrar prompt ao Spring AI.
-* [ ] Configurar structured output.
-* [ ] Desserializar resposta.
-* [ ] Implementar tratamento de resposta inválida.
-* [ ] Implementar retry controlado.
-* [ ] Criar testes de geração.
-* [ ] Testar com documentação real da API.
+* [x] Implementar serviço de geração.
+* [x] Integrar prompt ao Spring AI.
+* [x] Configurar structured output.
+* [x] Desserializar resposta.
+* [x] Implementar tratamento de resposta inválida.
+* [x] Implementar retry controlado.
+* [x] Criar testes de geração.
+* [x] Testar com documentação real da API.
 
 ---
 
@@ -263,13 +263,13 @@
 
 **Tasks:**
 
-* [ ] Implementar validação estrutural.
-* [ ] Validar IDs.
-* [ ] Validar referências.
-* [ ] Validar quantidade de Sprints.
-* [ ] Validar campos obrigatórios.
-* [ ] Criar mensagens de erro.
-* [ ] Criar testes de inconsistência.
+* [x] Implementar validação estrutural.
+* [x] Validar IDs.
+* [x] Validar referências.
+* [x] Validar quantidade de Sprints.
+* [x] Validar campos obrigatórios.
+* [x] Criar mensagens de erro.
+* [x] Criar testes de inconsistência.
 
 ---
 
@@ -379,14 +379,14 @@
 
 **Tasks:**
 
-* [ ] Criar MarkdownService.
-* [ ] Criar template do documento.
-* [ ] Implementar geração de Epics.
-* [ ] Implementar geração de User Stories.
-* [ ] Implementar geração de Tasks.
-* [ ] Implementar geração de Sprints.
-* [ ] Criar endpoint ou resposta para download.
-* [ ] Testar Markdown gerado.
+* [x] Criar MarkdownService.
+* [x] Criar template do documento.
+* [x] Implementar geração de Epics.
+* [x] Implementar geração de User Stories.
+* [x] Implementar geração de Tasks.
+* [x] Implementar geração de Sprints.
+* [x] Criar endpoint ou resposta para download.
+* [x] Testar Markdown gerado.
 
 ---
 
@@ -407,9 +407,9 @@
 
 **Tasks:**
 
-* [ ] Criar tratamento global de exceções.
-* [ ] Mapear erros HTTP.
-* [ ] Criar respostas padronizadas.
+* [x] Criar tratamento global de exceções.
+* [x] Mapear erros HTTP.
+* [x] Criar respostas padronizadas.
 * [ ] Implementar tratamento no React.
 * [ ] Criar estados de loading e erro.
 
