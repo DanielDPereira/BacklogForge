@@ -10,9 +10,9 @@ interface ProjectFormProps {
 
 export const ProjectForm: React.FC<ProjectFormProps> = ({ onSubmit, isLoading }) => {
   const [projectName, setProjectName] = useState('API Integradora FATEC');
-  const [sprintCount, setSprintCount] = useState<number>(6);
-  const [sprintDurationWeeks, setSprintDurationWeeks] = useState<number>(2);
-  const [teamSize, setTeamSize] = useState<number>(4);
+  const [sprintCount, setSprintCount] = useState<number>(3);
+  const [sprintDurationWeeks, setSprintDurationWeeks] = useState<number>(3);
+  const [teamSize, setTeamSize] = useState<number>(7);
   const [technologies, setTechnologies] = useState<string[]>(['Java', 'Spring Boot', 'React', 'PostgreSQL']);
   const [newTech, setNewTech] = useState('');
   const [suggestTechnologies, setSuggestTechnologies] = useState(false);
