@@ -432,14 +432,14 @@
 
 **Tasks:**
 
-* [ ] Definir abstração de credenciais.
-* [ ] Implementar leitura de múltiplas chaves por configuração.
-* [ ] Criar gerenciamento de estado das chaves.
-* [ ] Detectar erros de quota e rate limit.
-* [ ] Implementar seleção da próxima credencial.
-* [ ] Implementar retry controlado.
-* [ ] Criar testes de fallback.
-* [ ] Documentar configuração.
+* [x] Definir abstração de credenciais.
+* [x] Implementar leitura de múltiplas chaves por configuração.
+* [x] Criar gerenciamento de estado das chaves.
+* [x] Detectar erros de quota e rate limit.
+* [x] Implementar seleção da próxima credencial.
+* [x] Implementar retry controlado.
+* [x] Criar testes de fallback.
+* [x] Documentar configuração.
 
 ---
 
@@ -460,16 +460,16 @@
 
 **Tasks:**
 
-* [ ] Selecionar documentação de uma API da FATEC.
-* [ ] Configurar parâmetros reais.
-* [ ] Gerar backlog.
-* [ ] Avaliar Epics.
-* [ ] Avaliar User Stories.
-* [ ] Avaliar Tasks.
-* [ ] Avaliar distribuição das Sprints.
-* [ ] Registrar problemas.
-* [ ] Refinar prompt.
-* [ ] Executar nova geração.
+* [x] Selecionar documentação de uma API da FATEC.
+* [x] Configurar parâmetros reais.
+* [x] Gerar backlog.
+* [x] Avaliar Epics.
+* [x] Avaliar User Stories.
+* [x] Avaliar Tasks.
+* [x] Avaliar distribuição das Sprints.
+* [x] Registrar problemas.
+* [x] Refinar prompt.
+* [x] Executar nova geração.
 
 ---
 
