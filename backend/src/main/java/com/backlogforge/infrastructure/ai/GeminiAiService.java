@@ -5,12 +5,12 @@ import com.backlogforge.domain.exception.AiProviderException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * Implementação do serviço de IA integrado com a API do Google Gemini.
- * Suporta configuração via chave de API e resposta estruturada em JSON.
+ * Suporta rotação automática de múltiplas chaves e resiliência a erros de cota (HTTP 429).
  */
 @Service
 public class GeminiAiService implements AiService {
@@ -28,50 +28,64 @@ public class GeminiAiService implements AiService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final String apiKey;
+    private final ApiKeyManager apiKeyManager;
 
-    public GeminiAiService(
-            ObjectMapper objectMapper,
-            @Value("${spring.ai.gemini.api-key:${GEMINI_API_KEY:}}") String apiKey
-    ) {
+    public GeminiAiService(ObjectMapper objectMapper, ApiKeyManager apiKeyManager) {
         this.restTemplate = new RestTemplate();
         this.objectMapper = objectMapper;
-        this.apiKey = apiKey;
+        this.apiKeyManager = apiKeyManager;
     }
 
     @Override
     public String generate(String prompt) {
-        if (apiKey == null || apiKey.isBlank()) {
-            log.warn("Chave de API do Gemini não configurada (GEMINI_API_KEY).");
-            throw new AiProviderException("A chave da API do Gemini (GEMINI_API_KEY) não foi configurada no ambiente.");
-        }
+        int maxAttempts = Math.max(1, apiKeyManager.getAvailableKeysCount());
+        Exception lastException = null;
 
-        try {
-            String url = GEMINI_ENDPOINT + "?key=" + apiKey;
+        for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+            String activeKey = apiKeyManager.getActiveKey();
 
-            Map<String, Object> requestBody = Map.of(
-                    "contents", List.of(
-                            Map.of("parts", List.of(
-                                    Map.of("text", prompt)
-                            ))
-                    )
-            );
+            try {
+                String url = GEMINI_ENDPOINT + "?key=" + activeKey;
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
+                Map<String, Object> requestBody = Map.of(
+                        "contents", List.of(
+                                Map.of("parts", List.of(
+                                        Map.of("text", prompt)
+                                ))
+                        )
+                );
 
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+                HttpHeaders headers = new HttpHeaders();
+                headers.setContentType(MediaType.APPLICATION_JSON);
 
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return extractTextFromGeminiResponse(response.getBody());
+                HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+                ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    return extractTextFromGeminiResponse(response.getBody());
+                }
+            } catch (HttpStatusCodeException e) {
+                lastException = e;
+                log.warn("Erro HTTP {} na chamada ao Gemini API (tentativa {}/{}): {}",
+                        e.getStatusCode(), attempt, maxAttempts, e.getResponseBodyAsString());
+
+                if (e.getStatusCode().value() == 429 || isQuotaError(e.getResponseBodyAsString())) {
+                    apiKeyManager.markKeyExhausted(activeKey);
+                    continue; // Tenta a próxima chave
+                }
+                throw new AiProviderException("Erro do provedor Gemini (HTTP " + e.getStatusCode() + "): " + e.getMessage(), e);
+            } catch (Exception e) {
+                lastException = e;
+                log.error("Erro inesperado na chamada ao Gemini (tentativa {}/{}): {}", attempt, maxAttempts, e.getMessage());
+                if (isQuotaError(e.getMessage())) {
+                    apiKeyManager.markKeyExhausted(activeKey);
+                    continue;
+                }
+                throw new AiProviderException("Erro ao se comunicar com o provedor Gemini: " + e.getMessage(), e);
             }
-
-            throw new AiProviderException("Falha na resposta do Gemini. HTTP Status: " + response.getStatusCode());
-        } catch (Exception e) {
-            log.error("Erro de comunicação com o Gemini API: {}", e.getMessage(), e);
-            throw new AiProviderException("Erro ao se comunicar com o provedor Gemini: " + e.getMessage(), e);
         }
+
+        throw new AiProviderException("Todas as tentativas de geração com as chaves configuradas falharam.", lastException);
     }
 
     @Override
@@ -94,6 +108,12 @@ public class GeminiAiService implements AiService {
             log.debug("JSON recebido do modelo: {}", jsonResponse);
             throw new AiProviderException("A IA gerou uma resposta estruturalmente inválida para o schema esperado: " + e.getMessage(), e);
         }
+    }
+
+    private boolean isQuotaError(String errorDetails) {
+        if (errorDetails == null) return false;
+        String lower = errorDetails.toLowerCase();
+        return lower.contains("quota") || lower.contains("resource_exhausted") || lower.contains("rate limit") || lower.contains("429");
     }
 
     @SuppressWarnings("unchecked")
