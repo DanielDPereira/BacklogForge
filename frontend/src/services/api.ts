@@ -61,3 +61,19 @@ export async function exportMarkdown(backlog: ProductBacklog): Promise<Blob> {
 
   return response.blob();
 }
+
+export async function exportPdf(backlog: ProductBacklog): Promise<Blob> {
+  const response = await fetch(`${API_BASE_URL}/export-pdf`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(backlog),
+  });
+
+  if (!response.ok) {
+    throw new Error('Falha ao gerar arquivo PDF para download.');
+  }
+
+  return response.blob();
+}

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { ProductBacklog } from '../types/backlog';
 import { EpicCard } from './EpicCard';
 import { SprintBoard } from './SprintBoard';
-import { exportMarkdown } from '../services/api';
-import { Download, Copy, RefreshCw, Layers, Calendar, Check, Code } from 'lucide-react';
+import { exportMarkdown, exportPdf } from '../services/api';
+import { Download, Copy, RefreshCw, Layers, Calendar, Check, Code, FileText } from 'lucide-react';
 
 interface BacklogViewerProps {
   backlog: ProductBacklog;
@@ -12,12 +12,13 @@ interface BacklogViewerProps {
 
 export const BacklogViewer: React.FC<BacklogViewerProps> = ({ backlog, onReset }) => {
   const [activeTab, setActiveTab] = useState<'epics' | 'sprints'>('epics');
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExportingMd, setIsExportingMd] = useState(false);
+  const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleDownloadMarkdown = async () => {
     try {
-      setIsExporting(true);
+      setIsExportingMd(true);
       const blob = await exportMarkdown(backlog);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -30,7 +31,26 @@ export const BacklogViewer: React.FC<BacklogViewerProps> = ({ backlog, onReset }
     } catch (err) {
       alert('Erro ao exportar arquivo Markdown.');
     } finally {
-      setIsExporting(false);
+      setIsExportingMd(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    try {
+      setIsExportingPdf(true);
+      const blob = await exportPdf(backlog);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${backlog.projectName.replaceAll(/\s+/g, '_')}_Backlog.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      alert('Erro ao exportar arquivo PDF.');
+    } finally {
+      setIsExportingPdf(false);
     }
   };
 
@@ -57,8 +77,29 @@ export const BacklogViewer: React.FC<BacklogViewerProps> = ({ backlog, onReset }
           {/* Botões de Ação */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <button
+              onClick={handleDownloadPdf}
+              disabled={isExportingPdf}
+              style={{
+                padding: '10px 18px',
+                background: 'linear-gradient(135deg, #e11d48, #be123c)',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#ffffff',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.9rem',
+                boxShadow: '0 4px 15px rgba(225, 29, 72, 0.4)',
+              }}
+            >
+              <FileText size={16} /> {isExportingPdf ? 'Gerando PDF...' : 'Baixar PDF (.pdf)'}
+            </button>
+
+            <button
               onClick={handleDownloadMarkdown}
-              disabled={isExporting}
+              disabled={isExportingMd}
               style={{
                 padding: '10px 18px',
                 background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
@@ -74,7 +115,7 @@ export const BacklogViewer: React.FC<BacklogViewerProps> = ({ backlog, onReset }
                 boxShadow: '0 4px 15px var(--primary-glow)',
               }}
             >
-              <Download size={16} /> {isExporting ? 'Baixando...' : 'Baixar Markdown (.md)'}
+              <Download size={16} /> {isExportingMd ? 'Baixando...' : 'Baixar Markdown (.md)'}
             </button>
 
             <button

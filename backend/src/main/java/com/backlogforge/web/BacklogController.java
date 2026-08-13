@@ -3,6 +3,7 @@ package com.backlogforge.web;
 import com.backlogforge.application.usecase.GenerateBacklogUseCase;
 import com.backlogforge.domain.ProductBacklog;
 import com.backlogforge.infrastructure.export.MarkdownExportService;
+import com.backlogforge.infrastructure.export.PdfExportService;
 import com.backlogforge.infrastructure.pdf.PdfExtractorService;
 import com.backlogforge.web.dto.GenerateBacklogRequest;
 import jakarta.validation.Valid;
@@ -21,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Controller REST responsável por endpoints de geração, upload de documentos e exportação em Markdown.
+ * Controller REST responsável por endpoints de geração, upload de documentos e exportação em Markdown e PDF.
  */
 @RestController
 @RequestMapping("/api/v1/backlog")
@@ -31,15 +32,18 @@ public class BacklogController {
     private final GenerateBacklogUseCase generateBacklogUseCase;
     private final PdfExtractorService pdfExtractorService;
     private final MarkdownExportService markdownExportService;
+    private final PdfExportService pdfExportService;
 
     public BacklogController(
             GenerateBacklogUseCase generateBacklogUseCase,
             PdfExtractorService pdfExtractorService,
-            MarkdownExportService markdownExportService
+            MarkdownExportService markdownExportService,
+            PdfExportService pdfExportService
     ) {
         this.generateBacklogUseCase = generateBacklogUseCase;
         this.pdfExtractorService = pdfExtractorService;
         this.markdownExportService = markdownExportService;
+        this.pdfExportService = pdfExportService;
     }
 
     @PostMapping("/generate")
@@ -71,5 +75,17 @@ public class BacklogController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .contentType(MediaType.parseMediaType("text/markdown; charset=UTF-8"))
                 .body(bytes);
+    }
+
+    @PostMapping("/export-pdf")
+    public ResponseEntity<byte[]> exportPdf(@RequestBody ProductBacklog backlog) {
+        byte[] pdfBytes = pdfExportService.generatePdf(backlog);
+
+        String filename = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + ".pdf";
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
     }
 }
