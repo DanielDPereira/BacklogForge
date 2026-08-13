@@ -2,7 +2,19 @@
 
 **BacklogForge** é uma aplicação web para geração assistida por Inteligência Artificial de Product Backlogs estruturados a partir da documentação e das informações fornecidas sobre um projeto de software.
 
+## 📚 Central de Documentação Técnica
+
+Acesse os documentos detalhados sobre o projeto e a arquitetura:
+
+- 🏛️ **[Arquitetura e Decisões de Design (`architecture.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/architecture.md)** — Explicação da Clean Architecture, camadas Java/Spring Boot, React Frontend, engenharia de prompt e segurança de chaves.
+- 🚀 **[Guia de Configuração e Execução Local (`setup-and-execution.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/setup-and-execution.md)** — Passo a passo para configurar variáveis de ambiente (`.env`), compilar e rodar o Backend e Frontend.
+- 📡 **[Contratos de API REST e Schemas JSON (`api-contracts.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/api-contracts.md)** — Especificação detalhada dos endpoints, payloads de requisição, schemas JSON do `ProductBacklog` e tratamento de erros.
+- 📋 **[Product Backlog e Roadmap (`backlog.md`)](file:///c:/Users/Daniel/Documents/.Projetos/BacklogForge/docs/backlog.md)** — Épicos, User Stories, Tasks e status do roadmap MVP.
+
+---
+
 A aplicação tem como objetivo auxiliar Product Owners, equipes de desenvolvimento e estudantes na transformação de uma descrição de projeto ou conjunto de requisitos em um backlog inicial, detalhado, organizado e pronto para revisão e utilização no planejamento do desenvolvimento.
+
 
 O projeto surgiu principalmente a partir da necessidade observada nas APIs (Aprendizagem por Projetos Integradores) da FATEC, nas quais os alunos recebem um desafio de desenvolvimento a cada semestre e precisam transformar as especificações fornecidas em um Product Backlog. O processo de elaboração desse backlog pode exigir uma quantidade considerável de análise, decomposição de requisitos, definição de User Stories, criação de Tasks e planejamento das Sprints.
 
