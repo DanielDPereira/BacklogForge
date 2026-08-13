@@ -291,11 +291,11 @@
 
 **Tasks:**
 
-* [ ] Criar projeto React.
-* [ ] Configurar TypeScript.
-* [ ] Configurar ferramenta de build.
-* [ ] Criar estrutura inicial de componentes.
-* [ ] Criar layout principal.
+* [x] Criar projeto React.
+* [x] Configurar TypeScript.
+* [x] Configurar ferramenta de build.
+* [x] Criar estrutura inicial de componentes.
+* [x] Criar layout principal.
 
 ---
 
@@ -319,14 +319,14 @@
 
 **Tasks:**
 
-* [ ] Criar campo de nome.
-* [ ] Criar campo de texto adicional.
-* [ ] Criar componente de upload.
-* [ ] Criar campos de Sprint.
-* [ ] Criar campo de tamanho da equipe.
-* [ ] Criar campo de tecnologias.
-* [ ] Criar opção de sugestão de tecnologias.
-* [ ] Implementar validação.
+* [x] Criar campo de nome.
+* [x] Criar campo de texto adicional.
+* [x] Criar componente de upload.
+* [x] Criar campos de Sprint.
+* [x] Criar campo de tamanho da equipe.
+* [x] Criar campo de tecnologias.
+* [x] Criar opção de sugestão de tecnologias.
+* [x] Implementar validação.
 
 ---
 
@@ -348,13 +348,13 @@
 
 **Tasks:**
 
-* [ ] Criar componente de backlog.
-* [ ] Criar visualização de Epics.
-* [ ] Criar visualização de User Stories.
-* [ ] Criar visualização de Tasks.
-* [ ] Criar visualização de Sprints.
-* [ ] Implementar expansão/recolhimento.
-* [ ] Melhorar apresentação visual.
+* [x] Criar componente de backlog.
+* [x] Criar visualização de Epics.
+* [x] Criar visualização de User Stories.
+* [x] Criar visualização de Tasks.
+* [x] Criar visualização de Sprints.
+* [x] Implementar expansão/recolhimento.
+* [x] Melhorar apresentação visual.
 
 ---
 
@@ -410,8 +410,8 @@
 * [x] Criar tratamento global de exceções.
 * [x] Mapear erros HTTP.
 * [x] Criar respostas padronizadas.
-* [ ] Implementar tratamento no React.
-* [ ] Criar estados de loading e erro.
+* [x] Implementar tratamento no React.
+* [x] Criar estados de loading e erro.
 
 ---
 
