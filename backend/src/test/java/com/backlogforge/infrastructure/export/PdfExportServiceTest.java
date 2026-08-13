@@ -23,8 +23,8 @@ class PdfExportServiceTest {
     void shouldGenerateValidPdfDocument() throws IOException {
         PdfExportService service = new PdfExportService();
 
-        Task task1 = new Task("TSK-001", "Criar controllers", "Implementar endpoints REST");
-        Task task2 = new Task("TSK-002", "Criar testes unitários", "Cobrir regras de negócio");
+        Task task1 = new Task("TSK-001", "Criar controllers", "Implementar endpoints REST", Priority.HIGH);
+        Task task2 = new Task("TSK-002", "Criar testes unitários", "Cobrir regras de negócio", Priority.MEDIUM);
 
         UserStory us1 = new UserStory(
                 "US-001",
