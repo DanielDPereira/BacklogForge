@@ -18,9 +18,9 @@ Gera um Product Backlog estruturado a partir de parâmetros determinísticos em 
 ```json
 {
   "projectName": "Portal do Aluno FATEC",
-  "sprintCount": 6,
-  "sprintDurationWeeks": 2,
-  "teamSize": 4,
+  "sprintCount": 3,
+  "sprintDurationWeeks": 3,
+  "teamSize": 7,
   "technologies": ["Java 21", "Spring Boot", "React", "PostgreSQL"],
   "suggestTechnologies": false,
   "additionalText": "Sistema para acompanhamento de notas, frequências e rematrícula online dos alunos."
