@@ -2,7 +2,9 @@ package com.backlogforge.web;
 
 import com.backlogforge.domain.exception.AiProviderException;
 import com.backlogforge.domain.exception.InvalidBacklogException;
+import com.backlogforge.domain.exception.InvalidDocumentException;
 import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -47,6 +49,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
     }
+
+    @ExceptionHandler(InvalidDocumentException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidDocumentException(InvalidDocumentException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+        response.put("error", "Documento PDF Inválido");
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
 
     @ExceptionHandler(AiProviderException.class)
     public ResponseEntity<Map<String, Object>> handleAiProviderException(AiProviderException ex) {
