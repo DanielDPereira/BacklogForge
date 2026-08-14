@@ -61,9 +61,9 @@ O backend segue os princípios de **Clean Architecture** e **Package by Feature/
   4. **Proibição estrita de atribuição individual de tarefas a nomes de integrantes**.
   5. Estimativa em Story Points pela sequência Fibonacci (1, 2, 3, 5, 8, 13).
   6. Resposta em formato JSON estrito sem formatação Markdown circundante.
-- **Integração com Gemini API (`GeminiAiService`)**: Utiliza chamadas HTTP otimizadas com tratamento de erros e sanitização de blocos de código JSON.
-- **Extração de Texto de PDFs (`PdfExtractorService`)**: Utiliza Apache PDFBox 3.x para ler e concatenar múltiplos arquivos PDF fornecidos no upload multipart.
-- **Gerador de Markdown (`MarkdownExportService`)**: Transforma deterministicamente o objeto `ProductBacklog` em um documento `.md` com formatação limpa e organizada.
+- **Extração Híbrida de PDFs (`PdfExtractorService`)**: Utiliza Apache PDFBox 3.x para ler e extrair texto vetorial de PDFs. Caso o PDF seja escaneado ou composto por imagens, o serviço aciona automaticamente a renderização de páginas em PNG (`PDFRenderer`) e realiza transcrição por OCR visual multimodal via Gemini.
+- **Normalização e Resiliência de Sprints (`GenerateBacklogUseCase`)**: Ajusta e normaliza o quantitativo de Sprints retornado pela IA para atender deterministicamente o parâmetro solicitado.
+- **Gerador de Markdown e PDF (`MarkdownExportService` / `PdfExportService`)**: Transforma deterministicamente o objeto `ProductBacklog` em documentos `.md` e `.pdf` com formatação limpa e organizada.
 
 ### 4. Camada Web (`com.backlogforge.web`)
 - **Contratos DTO com Bean Validation**: A classe `GenerateBacklogRequest` utiliza anotações Bean Validation (`@NotBlank`, `@Min`, `@Max`, `@Size`) para rejeitar entradas inválidas na borda da aplicação.

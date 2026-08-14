@@ -100,6 +100,7 @@
 * [x] Validar extensão e tipo MIME.
 * [x] Permitir múltiplos arquivos.
 * [x] Extrair texto dos PDFs.
+* [x] Suportar extração de PDFs escaneados (baseados em imagens) via OCR multimodal por IA.
 * [x] Tratar PDF inválido ou ilegível.
 * [x] Criar testes para upload e extração.
 

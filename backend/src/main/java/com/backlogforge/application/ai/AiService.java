@@ -15,6 +15,16 @@ public interface AiService {
     String generate(String prompt);
 
     /**
+     * Envia um prompt de texto e uma imagem (Base64) para o modelo multimodal da IA.
+     *
+     * @param prompt      Texto do prompt com instruções.
+     * @param base64Image Imagem codificada em Base64.
+     * @param mimeType    Tipo MIME da imagem (ex: image/png, image/jpeg).
+     * @return Transcrição ou resposta gerada pelo modelo multimodal.
+     */
+    String generateWithImage(String prompt, String base64Image, String mimeType);
+
+    /**
      * Envia um prompt estruturado e desserializa a resposta no tipo especificado.
      *
      * @param prompt       Texto do prompt a ser processado.
