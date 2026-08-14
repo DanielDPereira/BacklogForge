@@ -1,5 +1,8 @@
 package com.backlogforge.domain;
 
+import com.backlogforge.infrastructure.json.StringListDeserializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.List;
 
 /**
@@ -8,6 +11,7 @@ import java.util.List;
 public record ProductBacklog(
         String projectName,
         String summary,
+        @JsonDeserialize(using = StringListDeserializer.class)
         List<String> suggestedTechnologies,
         List<Epic> epics,
         List<Sprint> sprints
