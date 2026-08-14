@@ -28,12 +28,14 @@ O projeto utiliza um arquivo `.env` na raiz do repositório para carregar variá
 2. Abra o arquivo `.env` e insira sua chave da API do Gemini:
    ```env
    # Configurações do Provedor de IA (Google Gemini API)
-   # Chave única ou múltiplas chaves separadas por vírgula para suporte a rotação por cota:
+   # Chave única:
    GEMINI_API_KEY=AIzaSyYourActualGeminiApiKeyHere
-   # GEMINI_API_KEYS=key1,key2,key3
+
+   # Múltiplas chaves separadas por vírgula para suporte a rotação automática de cota (HTTP 429):
+   # GEMINI_API_KEYS=chave1,chave2,chave3
    
-   # Modelo inicial configurado (fallback automático para gemini-1.5-flash, gemini-2.0-flash, etc. se HTTP 404)
-   GEMINI_MODEL=gemini-1.5-flash-latest
+   # Modelo preferencial configurado (com fallback automático para gemini-2.5-pro, gemini-3.6-flash, etc.)
+   GEMINI_MODEL=gemini-2.5-flash
 
    # Configurações do Servidor Backend
    SERVER_PORT=8080
