@@ -33,6 +33,7 @@ Toda a documentação técnica está organizada de forma modular dentro da pasta
 ### Backend (`backend/`)
 - **Java 21**
 - **Spring Boot 3.3.2** (`spring-boot-starter-web`, `spring-boot-starter-validation`)
+- **Springdoc OpenAPI 3.0 / Swagger UI** (`springdoc-openapi-starter-webmvc-ui` v2.6.0)
 - **Spring AI / Google Gemini API** (`gemini-2.5-flash`, `gemini-2.5-pro`, `gemini-3.6-flash`, `gemini-flash-latest`)
 - **Apache PDFBox 3.0.2** (Extração de texto vetorial e renderização PNG para OCR)
 - **Dotenv Java 3.1.0** & **Maven Wrapper**

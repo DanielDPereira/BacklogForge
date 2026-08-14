@@ -2,7 +2,9 @@
 
 Este documento detalha os contratos dos endpoints REST disponibilizados pelo backend do **BacklogForge**, bem como a especificação completa do schema JSON retornado pela inteligência artificial e os formatos de exportação.
 
-**Base URL**: `http://localhost:8080/api/v1/backlog`
+**Base URL**: `http://localhost:8080/api/v1/backlog`  
+**Swagger UI (Documentação Interativa)**: [`http://localhost:8080/swagger-ui.html`](http://localhost:8080/swagger-ui.html)  
+**Especificação OpenAPI 3.0 JSON**: [`http://localhost:8080/v3/api-docs`](http://localhost:8080/v3/api-docs)
 
 ---
 

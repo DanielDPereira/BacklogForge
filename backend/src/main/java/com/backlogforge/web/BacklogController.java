@@ -6,7 +6,15 @@ import com.backlogforge.infrastructure.export.MarkdownExportService;
 import com.backlogforge.infrastructure.export.PdfExportService;
 import com.backlogforge.infrastructure.pdf.PdfExtractorService;
 import com.backlogforge.web.dto.GenerateBacklogRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +35,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/backlog")
 @CrossOrigin(origins = "*")
+@Tag(name = "Product Backlog Controller", description = "Endpoints REST para geração assistida de Product Backlogs com IA, processamento de PDFs e exportação multiformato.")
 public class BacklogController {
 
     private final GenerateBacklogUseCase generateBacklogUseCase;
@@ -47,6 +56,16 @@ public class BacklogController {
     }
 
     @PostMapping("/generate")
+    @Operation(
+            summary = "Gerar Product Backlog (apenas texto/parâmetros)",
+            description = "Gera um Product Backlog estruturado contendo Épicos, User Stories, Tasks, critérios de aceitação e Sprints a partir dos parâmetros informados e texto adicional."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product Backlog gerado com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductBacklog.class))),
+            @ApiResponse(responseCode = "400", description = "Parâmetros de requisição inválidos."),
+            @ApiResponse(responseCode = "422", description = "A IA gerou um backlog estruturalmente inconsistente."),
+            @ApiResponse(responseCode = "502", description = "Erro de comunicação ou limite de quota no provedor de IA (Gemini API).")
+    })
     public ResponseEntity<ProductBacklog> generateBacklog(
             @Valid @RequestBody GenerateBacklogRequest request
     ) {
@@ -55,8 +74,19 @@ public class BacklogController {
     }
 
     @PostMapping(value = "/generate-with-pdf", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            summary = "Gerar Product Backlog com anexos em PDF",
+            description = "Gera um Product Backlog combinando parâmetros determinísticos com o texto extraído de arquivos PDF (suportando documentos vetoriais e PDFs escaneados via OCR visual multimodal)."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product Backlog gerado com sucesso a partir dos PDFs e parâmetros.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductBacklog.class))),
+            @ApiResponse(responseCode = "400", description = "Parâmetros inválidos ou extensão de arquivo incorreta (apenas .pdf aceito)."),
+            @ApiResponse(responseCode = "422", description = "Inconsistência estrutural no backlog gerado."),
+            @ApiResponse(responseCode = "502", description = "Erro no provedor de IA (Gemini API).")
+    })
     public ResponseEntity<ProductBacklog> generateBacklogWithPdf(
             @Valid @RequestPart("request") GenerateBacklogRequest request,
+            @Parameter(description = "Arquivos PDF anexados (vetoriais ou escaneados)", required = false)
             @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) {
         String pdfText = pdfExtractorService.extractTextFromPdfs(files);
@@ -65,12 +95,22 @@ public class BacklogController {
     }
 
     @PostMapping("/export-markdown")
-    public ResponseEntity<byte[]> exportMarkdown(@RequestBody ProductBacklog backlog) {
+    @Operation(
+            summary = "Exportar Backlog para formato Markdown (.md)",
+            description = "Recebe um objeto Product Backlog estruturado e gera o conteúdo formatado em arquivo Markdown (.md) para download."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Arquivo Markdown (.md) gerado com sucesso.", content = @Content(mediaType = "text/markdown; charset=UTF-8")),
+            @ApiResponse(responseCode = "500", description = "Erro ao processar o modelo para geração do Markdown.")
+    })
+    public ResponseEntity<byte[]> exportMarkdown(
+            @RequestBody ProductBacklog backlog
+    ) {
         String markdown = markdownExportService.generateMarkdown(backlog);
         byte[] bytes = markdown.getBytes(StandardCharsets.UTF_8);
 
         String rawName = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + ".md";
-        org.springframework.http.ContentDisposition contentDisposition = org.springframework.http.ContentDisposition
+        ContentDisposition contentDisposition = ContentDisposition
                 .attachment()
                 .filename(rawName, StandardCharsets.UTF_8)
                 .build();
@@ -82,11 +122,21 @@ public class BacklogController {
     }
 
     @PostMapping("/export-pdf")
-    public ResponseEntity<byte[]> exportPdf(@RequestBody ProductBacklog backlog) {
+    @Operation(
+            summary = "Exportar Backlog para formato PDF (.pdf)",
+            description = "Recebe um objeto Product Backlog estruturado e gera um documento PDF (.pdf) diagramado profissionalmente."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Arquivo PDF (.pdf) gerado com sucesso.", content = @Content(mediaType = "application/pdf")),
+            @ApiResponse(responseCode = "500", description = "Erro ao gerar a diagramação PDF do Backlog.")
+    })
+    public ResponseEntity<byte[]> exportPdf(
+            @RequestBody ProductBacklog backlog
+    ) {
         byte[] pdfBytes = pdfExportService.generatePdf(backlog);
 
         String rawName = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + ".pdf";
-        org.springframework.http.ContentDisposition contentDisposition = org.springframework.http.ContentDisposition
+        ContentDisposition contentDisposition = ContentDisposition
                 .attachment()
                 .filename(rawName, StandardCharsets.UTF_8)
                 .build();
