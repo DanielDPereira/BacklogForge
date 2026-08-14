@@ -91,19 +91,28 @@ public class GeminiAiService implements AiService {
 
                     if (e.getStatusCode().value() == 404) {
                         log.info("Modelo Gemini '{}' não encontrado para esta API Key (HTTP 404). Tentando modelo alternativo...", modelName);
-                        continue; // Tenta o próximo modelo candidato da lista
+                        continue;
+                    }
+
+                    if (isTemporaryServerError(e.getStatusCode().value(), e.getResponseBodyAsString())) {
+                        log.warn("Modelo Gemini '{}' temporariamente sobrecarregado ou indisponível (HTTP {}). Alternando automaticamente para o próximo modelo candidato...", modelName, e.getStatusCode().value());
+                        continue;
                     }
 
                     if (e.getStatusCode().value() == 429 || isQuotaError(e.getResponseBodyAsString())) {
                         log.warn("Limite de cota atingido na chave atual (HTTP 429). Rotacionando chave...");
                         apiKeyManager.markKeyExhausted(activeKey);
-                        break; // Quebra o loop de modelos para tentar a próxima chave de API
+                        break;
                     }
 
                     throw new AiProviderException("Erro do provedor Gemini (HTTP " + e.getStatusCode() + "): " + e.getResponseBodyAsString(), e);
                 } catch (Exception e) {
                     lastException = e;
                     log.error("Erro inesperado na chamada ao modelo '{}': {}", modelName, e.getMessage());
+                    if (isTemporaryServerError(503, e.getMessage())) {
+                        log.warn("Modelo Gemini '{}' com indisponibilidade temporária. Alternando modelo...", modelName);
+                        continue;
+                    }
                     if (isQuotaError(e.getMessage())) {
                         apiKeyManager.markKeyExhausted(activeKey);
                         break;
@@ -158,6 +167,11 @@ public class GeminiAiService implements AiService {
                         continue;
                     }
 
+                    if (isTemporaryServerError(e.getStatusCode().value(), e.getResponseBodyAsString())) {
+                        log.warn("Modelo Gemini multimodal '{}' temporariamente sobrecarregado (HTTP {}). Alternando modelo candidato...", modelName, e.getStatusCode().value());
+                        continue;
+                    }
+
                     if (e.getStatusCode().value() == 429 || isQuotaError(e.getResponseBodyAsString())) {
                         log.warn("Limite de cota atingido no modelo '{}' (HTTP 429). Tentando próximo modelo candidato...", modelName);
                         continue;
@@ -167,6 +181,10 @@ public class GeminiAiService implements AiService {
                 } catch (Exception e) {
                     lastException = e;
                     log.error("Erro inesperado na chamada multimodal ao modelo '{}': {}", modelName, e.getMessage());
+                    if (isTemporaryServerError(503, e.getMessage())) {
+                        log.warn("Modelo multimodal '{}' com indisponibilidade temporária. Alternando modelo...", modelName);
+                        continue;
+                    }
                     if (isQuotaError(e.getMessage())) {
                         apiKeyManager.markKeyExhausted(activeKey);
                         break;
@@ -217,6 +235,17 @@ public class GeminiAiService implements AiService {
         if (errorDetails == null) return false;
         String lower = errorDetails.toLowerCase();
         return lower.contains("quota") || lower.contains("resource_exhausted") || lower.contains("rate limit") || lower.contains("429");
+    }
+
+    private boolean isTemporaryServerError(int statusCode, String errorDetails) {
+        if (statusCode >= 500 && statusCode <= 599) {
+            return true;
+        }
+        if (errorDetails != null) {
+            String lower = errorDetails.toLowerCase();
+            return lower.contains("503") || lower.contains("service_unavailable") || lower.contains("unavailable") || lower.contains("high demand") || lower.contains("overloaded");
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")
