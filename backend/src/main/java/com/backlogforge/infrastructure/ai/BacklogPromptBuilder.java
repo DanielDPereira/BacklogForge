@@ -25,18 +25,19 @@ public class BacklogPromptBuilder {
                    - Cada User Story contém uma lista de Tasks operacionais/técnicas e critérios de aceitação.
                    - Os IDs devem ser padronizados (ex: EPIC-001, US-001, TASK-001, SPRINT-01).
 
-                2. CONTRATO DAS SPRINTS:
-                   - Você DEVE gerar exatamente %d Sprints. Nem mais, nem menos.
-                   - Cada Sprint possui um nome (ex: "Sprint 1"), um objetivo claro (goal) e uma lista de IDs das User Stories alocadas nessa Sprint (userStoryIds).
-                   - As Sprints DEVEM referenciar as User Stories exclusivamente através de seus IDs (ex: ["US-001", "US-002"]), sem duplicar o conteúdo da User Story.
-                   - Todas as User Stories criadas nos Épicos devem ser distribuídas de forma coerente entre as Sprints solicitadas.
+                2. CONTRATO CRÍTICO DAS SPRINTS:
+                   - O campo `sprints` na raiz do JSON DEVE ser uma lista contendo EXATAMENTE %d elementos (Sprint 1 até Sprint %d).
+                   - É ESTRITAMENTE OBRIGATÓRIO que a lista `sprints` contenha exatamente %d objetos de Sprint no JSON.
+                   - Cada Sprint possui id (ex: "SPRINT-01"), name (ex: "Sprint 1"), goal (objetivo claro) e a lista de IDs das User Stories alocadas (userStoryIds).
+                   - As Sprints DEVEM referenciar as User Stories exclusivamente através de seus IDs (ex: ["US-001", "US-002"]).
+                   - Todas as User Stories criadas nos Épicos devem ser distribuídas de forma coerente entre as %d Sprints.
 
                 3. REGRAS DE TAREFAS E EQUIPE:
                    - O tamanho da equipe é de %d integrante(s). Calibre a granularidade e o nível de detalhe das Tasks para este tamanho de equipe.
                    - É ESTRITAMENTE PROIBIDO atribuir tarefas a pessoas específicas ou mencionar nomes de integrantes.
 
                 4. TECNOLOGIAS:
-                """.formatted(request.sprintCount(), request.teamSize()));
+                """.formatted(request.sprintCount(), request.sprintCount(), request.sprintCount(), request.sprintCount(), request.teamSize()));
 
         if (Boolean.TRUE.equals(request.suggestTechnologies())) {
             if (request.technologies() != null && !request.technologies().isEmpty()) {

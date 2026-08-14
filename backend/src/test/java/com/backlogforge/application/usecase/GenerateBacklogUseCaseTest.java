@@ -76,8 +76,8 @@ class GenerateBacklogUseCaseTest {
     }
 
     @Test
-    @DisplayName("Deve lançar InvalidBacklogException se a quantidade de Sprints diferir do solicitado")
-    void shouldThrowExceptionWhenSprintCountMismatch() {
+    @DisplayName("Deve normalizar a quantidade de Sprints se a IA retornar quantidade diferente do solicitado")
+    void shouldNormalizeSprintCountWhenMismatchOccurs() {
         GenerateBacklogRequest request = new GenerateBacklogRequest(
                 "Gestão Escolar",
                 3,
@@ -99,6 +99,12 @@ class GenerateBacklogUseCaseTest {
 
         when(aiService.generateStructured(any(), eq(ProductBacklog.class))).thenReturn(mockBacklog);
 
-        assertThrows(InvalidBacklogException.class, () -> useCase.execute(request, null));
+        ProductBacklog result = useCase.execute(request, null);
+
+        assertNotNull(result);
+        assertEquals(3, result.sprints().size());
+        assertEquals("SPRINT-01", result.sprints().get(0).id());
+        assertEquals("SPRINT-02", result.sprints().get(1).id());
+        assertEquals("SPRINT-03", result.sprints().get(2).id());
     }
 }
