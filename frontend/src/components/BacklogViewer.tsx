@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { ProductBacklog, Epic, Sprint } from '../types/backlog';
 import { EpicCard } from './EpicCard';
 import { SprintBoard } from './SprintBoard';
-import { exportMarkdown, exportPdf } from '../services/api';
-import { Download, Copy, RefreshCw, Layers, Calendar, Check, Code, FileText, Edit3, Plus, Trash2 } from 'lucide-react';
+import { exportCsv, exportMarkdown, exportPdf } from '../services/api';
+import { Download, Copy, RefreshCw, Layers, Calendar, Check, Code, FileText, Edit3, Plus, Trash2, Table } from 'lucide-react';
 
 interface BacklogViewerProps {
   backlog: ProductBacklog;
@@ -16,6 +16,7 @@ export const BacklogViewer: React.FC<BacklogViewerProps> = ({ backlog, onUpdateB
   const [isEditMode, setIsEditMode] = useState(false);
   const [isExportingMd, setIsExportingMd] = useState(false);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
+  const [isExportingCsv, setIsExportingCsv] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleUpdateProjectName = (projectName: string) => {
@@ -99,6 +100,25 @@ export const BacklogViewer: React.FC<BacklogViewerProps> = ({ backlog, onUpdateB
     }
   };
 
+  const handleDownloadCsv = async () => {
+    try {
+      setIsExportingCsv(true);
+      const blob = await exportCsv(backlog);
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${backlog.projectName.replaceAll(/\s+/g, '_')}_Jira.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      alert('Erro ao exportar arquivo CSV.');
+    } finally {
+      setIsExportingCsv(false);
+    }
+  };
+
   const handleCopyJson = () => {
     navigator.clipboard.writeText(JSON.stringify(backlog, null, 2));
     setCopied(true);
@@ -150,6 +170,27 @@ export const BacklogViewer: React.FC<BacklogViewerProps> = ({ backlog, onUpdateB
             >
               <Edit3 size={16} color={isEditMode ? '#60a5fa' : '#94a3b8'} />
               {isEditMode ? 'Modo Edição (ON)' : 'Editar Backlog'}
+            </button>
+
+            <button
+              onClick={handleDownloadCsv}
+              disabled={isExportingCsv}
+              style={{
+                padding: '10px 18px',
+                background: 'linear-gradient(135deg, #059669, #10b981)',
+                border: 'none',
+                borderRadius: '8px',
+                color: '#ffffff',
+                fontWeight: 600,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontSize: '0.9rem',
+                boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+              }}
+            >
+              <Table size={16} /> {isExportingCsv ? 'Gerando CSV...' : 'Baixar CSV (Jira/Trello)'}
             </button>
 
             <button
