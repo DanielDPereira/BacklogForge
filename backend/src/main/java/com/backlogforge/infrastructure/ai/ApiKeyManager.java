@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ApiKeyManager {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyManager.class);
-    private static final long COOLDOWN_SECONDS = 300; // 5 minutos de pausa para chave esgotada
+    private static final long COOLDOWN_SECONDS = 60; // 1 minuto de pausa para chave atingida por rate limit
 
     private final List<String> apiKeys = new ArrayList<>();
     private final AtomicInteger currentIndex = new AtomicInteger(0);

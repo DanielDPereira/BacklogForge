@@ -29,11 +29,13 @@ public class GeminiAiService implements AiService {
     private static final String GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/";
 
     private static final List<String> FALLBACK_MODELS = List.of(
+            "gemini-2.5-flash",
+            "gemini-2.5-pro",
+            "gemini-3.6-flash",
+            "gemini-flash-latest",
+            "gemini-3.5-flash",
             "gemini-1.5-flash-latest",
             "gemini-1.5-flash",
-            "gemini-2.0-flash",
-            "gemini-2.5-flash",
-            "gemini-1.5-pro",
             "gemini-pro"
     );
 
@@ -45,7 +47,7 @@ public class GeminiAiService implements AiService {
     public GeminiAiService(
             ObjectMapper objectMapper,
             ApiKeyManager apiKeyManager,
-            @Value("${spring.ai.gemini.model:${GEMINI_MODEL:gemini-1.5-flash-latest}}") String configuredModel
+            @Value("${spring.ai.gemini.model:${GEMINI_MODEL:gemini-2.5-flash}}") String configuredModel
     ) {
         this.restTemplate = new RestTemplate();
         this.objectMapper = objectMapper;
@@ -111,6 +113,69 @@ public class GeminiAiService implements AiService {
         }
 
         throw new AiProviderException("Todas as tentativas de geração com os modelos e chaves configurados falharam.", lastException);
+    }
+
+    @Override
+    public String generateWithImage(String prompt, String base64Image, String mimeType) {
+        int maxKeyAttempts = Math.max(1, apiKeyManager.getAvailableKeysCount());
+        List<String> candidateModels = getCandidateModels();
+        Exception lastException = null;
+
+        for (int keyAttempt = 1; keyAttempt <= maxKeyAttempts; keyAttempt++) {
+            String activeKey = apiKeyManager.getActiveKey();
+
+            for (String modelName : candidateModels) {
+                try {
+                    String url = GEMINI_BASE_URL + modelName + ":generateContent?key=" + activeKey;
+                    log.debug("Chamando Gemini API multimodal com modelo '{}' (tentativa {}/{})", modelName, keyAttempt, maxKeyAttempts);
+
+                    Map<String, Object> requestBody = Map.of(
+                            "contents", List.of(
+                                    Map.of("parts", List.of(
+                                            Map.of("text", prompt),
+                                            Map.of("inline_data", Map.of(
+                                                    "mime_type", mimeType != null ? mimeType : "image/png",
+                                                    "data", base64Image
+                                            ))
+                                    ))
+                            )
+                    );
+
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+
+                    HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+                    ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+
+                    if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                        return extractTextFromGeminiResponse(response.getBody());
+                    }
+                } catch (HttpStatusCodeException e) {
+                    lastException = e;
+
+                    if (e.getStatusCode().value() == 404) {
+                        log.info("Modelo Gemini '{}' não encontrado para esta API Key (HTTP 404). Tentando modelo alternativo...", modelName);
+                        continue;
+                    }
+
+                    if (e.getStatusCode().value() == 429 || isQuotaError(e.getResponseBodyAsString())) {
+                        log.warn("Limite de cota atingido no modelo '{}' (HTTP 429). Tentando próximo modelo candidato...", modelName);
+                        continue;
+                    }
+
+                    throw new AiProviderException("Erro do provedor Gemini (HTTP " + e.getStatusCode() + "): " + e.getResponseBodyAsString(), e);
+                } catch (Exception e) {
+                    lastException = e;
+                    log.error("Erro inesperado na chamada multimodal ao modelo '{}': {}", modelName, e.getMessage());
+                    if (isQuotaError(e.getMessage())) {
+                        apiKeyManager.markKeyExhausted(activeKey);
+                        break;
+                    }
+                }
+            }
+        }
+
+        throw new AiProviderException("Todas as tentativas de geração multimodal falharam.", lastException);
     }
 
     @Override
