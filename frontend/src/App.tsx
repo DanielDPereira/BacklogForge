@@ -70,7 +70,7 @@ export const App: React.FC = () => {
       {!backlog ? (
         <ProjectForm onSubmit={handleFormSubmit} isLoading={isLoading} />
       ) : (
-        <BacklogViewer backlog={backlog} onReset={handleReset} />
+        <BacklogViewer backlog={backlog} onUpdateBacklog={(updated) => setBacklog(updated)} onReset={handleReset} />
       )}
     </div>
   );

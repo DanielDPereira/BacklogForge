@@ -116,3 +116,36 @@ input:focus, textarea:focus, select:focus {
 .animate-pulse-slow {
   animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Inline Edit Controls */
+.inline-input {
+  background: #090d16;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 6px 10px;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+.inline-textarea {
+  background: #090d16;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  color: #cbd5e1;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  width: 100%;
+  resize: vertical;
+}
+
+.inline-select {
+  background: #090d16;
+  border: 1px solid #6366f1;
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}

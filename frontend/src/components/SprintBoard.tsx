@@ -1,12 +1,18 @@
 import React from 'react';
 import { ProductBacklog, Sprint, UserStory } from '../types/backlog';
-import { Calendar, Target, CheckCircle } from 'lucide-react';
+import { Calendar, Target } from 'lucide-react';
 
 interface SprintBoardProps {
   backlog: ProductBacklog;
+  isEditMode?: boolean;
+  onUpdateSprint?: (sprintId: string, updatedSprint: Sprint) => void;
 }
 
-export const SprintBoard: React.FC<SprintBoardProps> = ({ backlog }) => {
+export const SprintBoard: React.FC<SprintBoardProps> = ({
+  backlog,
+  isEditMode = false,
+  onUpdateSprint,
+}) => {
   // Mapeamento rápido de User Stories por ID
   const storyMap = new Map<string, UserStory>();
   backlog.epics.forEach((epic) => {
@@ -36,10 +42,24 @@ export const SprintBoard: React.FC<SprintBoardProps> = ({ backlog }) => {
           >
             <div>
               {/* Header da Sprint */}
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-                <h3 style={{ fontSize: '1.15rem', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Calendar size={18} color="var(--primary)" /> {sprint.name}
-                </h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px', gap: '10px' }}>
+                {isEditMode ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1 }}>
+                    <Calendar size={18} color="var(--primary)" style={{ flexShrink: 0 }} />
+                    <input
+                      type="text"
+                      className="inline-input"
+                      value={sprint.name}
+                      onChange={(e) => onUpdateSprint && onUpdateSprint(sprint.id, { ...sprint, name: e.target.value })}
+                      style={{ fontWeight: 700 }}
+                    />
+                  </div>
+                ) : (
+                  <h3 style={{ fontSize: '1.15rem', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Calendar size={18} color="var(--primary)" /> {sprint.name}
+                  </h3>
+                )}
+
                 <span
                   style={{
                     padding: '4px 10px',
@@ -48,6 +68,7 @@ export const SprintBoard: React.FC<SprintBoardProps> = ({ backlog }) => {
                     color: '#a5b4fc',
                     fontSize: '0.8rem',
                     fontWeight: 700,
+                    flexShrink: 0,
                   }}
                 >
                   {totalPoints} Story Points
@@ -65,9 +86,18 @@ export const SprintBoard: React.FC<SprintBoardProps> = ({ backlog }) => {
                 }}
               >
                 <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Target size={12} color="#38bdf8" /> Objetivo
+                  <Target size={12} color="#38bdf8" /> Objetivo da Sprint
                 </div>
-                <p style={{ fontSize: '0.875rem', color: '#e2e8f0' }}>{sprint.goal}</p>
+                {isEditMode ? (
+                  <textarea
+                    className="inline-textarea"
+                    rows={2}
+                    value={sprint.goal}
+                    onChange={(e) => onUpdateSprint && onUpdateSprint(sprint.id, { ...sprint, goal: e.target.value })}
+                  />
+                ) : (
+                  <p style={{ fontSize: '0.875rem', color: '#e2e8f0' }}>{sprint.goal}</p>
+                )}
               </div>
 
               {/* User Stories Alocadas */}

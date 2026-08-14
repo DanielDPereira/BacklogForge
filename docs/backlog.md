@@ -502,6 +502,34 @@
 
 ---
 
+### US-019 — Edição Inline Interativa do Backlog no Frontend
+
+**Prioridade:** MEDIUM
+**Story Points:** 3
+
+**Como usuário/PO, quero poder editar o nome do projeto, resumo, épicos, histórias, tarefas, critérios e sprints diretamente na tela para ajustar o backlog antes de exportar.**
+
+**Critérios de aceitação:**
+
+* Botão de alternância ("Editar Backlog" / "Modo Edição ON") presente no visualizador do backlog.
+* Edição inline para Nome do Projeto e Resumo.
+* Edição inline para Título e Descrição dos Épicos e inclusão/exclusão de Épicos.
+* Edição inline para Título, Descrição, Prioridade (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`) e Story Points das User Stories.
+* Edição inline para Critérios de Aceitação (adicionar, alterar e excluir).
+* Edição inline para Tasks Operacionais (título, descrição, prioridade, adicionar e excluir).
+* Edição inline para Nome e Objetivos das Sprints na aba de planejamento.
+* Todas as alterações devem ser preservadas em memória e refletidas instantaneamente na exportação em PDF e Markdown.
+
+**Tasks:**
+
+* [x] Adicionar botão de alternância do Modo Edição no `BacklogViewer.tsx`.
+* [x] Adicionar estilos CSS utilitários para inputs e textareas inline (`index.css`).
+* [x] Implementar formulários inline em `EpicCard.tsx` para épicos, histórias, critérios e tarefas.
+* [x] Implementar formulários inline em `SprintBoard.tsx` para nomes e objetivos de sprints.
+* [x] Conectar propagação de estado com o `App.tsx` para garantia de exportação atualizada.
+
+---
+
 # Roadmap sugerido
 
 ## Sprint 1 — Fundação e IA
