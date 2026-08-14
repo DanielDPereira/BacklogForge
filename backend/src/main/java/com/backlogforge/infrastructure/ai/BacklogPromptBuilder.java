@@ -39,10 +39,16 @@ public class BacklogPromptBuilder {
                 """.formatted(request.sprintCount(), request.teamSize()));
 
         if (Boolean.TRUE.equals(request.suggestTechnologies())) {
-            sb.append("   - O usuário solicitou que você sugira tecnologias recomendadas para o projeto. Preencha o campo `suggestedTechnologies` com as tecnologias sugeridas.\n");
+            if (request.technologies() != null && !request.technologies().isEmpty()) {
+                sb.append("   - Tecnologias BASE informadas pelo usuário: ").append(formatTechnologies(request.technologies())).append("\n");
+                sb.append("   - REGRA DE SUGESTÃO: O usuário solicitou sugestões complementares. Você DEVE MANTER OBRIGATORIAMENTE todas as tecnologias base informadas (ex: Java, Spring Boot, React, PostgreSQL) e COMPLEMENTAR a lista com bibliotecas, ferramentas de CI/CD, banco de dados ou frameworks auxiliares recomendados (ex: Docker, OpenAPI/Swagger, JUnit 5, TailwindCSS).\n");
+                sb.append("   - PROIBIÇÃO DE CONTRADIÇÃO: É ESTRITAMENTE PROIBIDO substituir ou ignorar as tecnologias base do usuário por outras tecnologias incompatíveis (ex: NUNCA substitua Java/Spring por Python/Flask nas User Stories e Tasks quando Java/Spring foi informado).\n");
+            } else {
+                sb.append("   - O usuário solicitou que você sugira a melhor stack tecnológica para o projeto. Analise o escopo e preencha o campo `suggestedTechnologies` com tecnologias modernas, robustas e coerentes entre si.\n");
+            }
         } else {
-            sb.append("   - Tecnologias especificadas pelo usuário: ").append(formatTechnologies(request.technologies())).append("\n");
-            sb.append("   - Mantenha `suggestedTechnologies` como uma lista vazia ou contendo apenas as tecnologias especificadas pelo usuário.\n");
+            sb.append("   - Tecnologias ESTRITAS especificadas pelo usuário: ").append(formatTechnologies(request.technologies())).append("\n");
+            sb.append("   - Mantenha `suggestedTechnologies` contendo exatamente as tecnologias informadas pelo usuário. Todas as User Stories e Tasks DEVEM utilizar EXCLUSIVAMENTE essa stack.\n");
         }
 
         sb.append("""
