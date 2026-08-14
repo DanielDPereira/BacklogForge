@@ -1,6 +1,6 @@
 # Contratos da API REST e Schemas JSON — BacklogForge
 
-Este documento detalha os contratos dos endpoints REST disponibilizados pelo backend do **BacklogForge**, bem como a especificação completa do schema JSON retornado pela inteligência artificial.
+Este documento detalha os contratos dos endpoints REST disponibilizados pelo backend do **BacklogForge**, bem como a especificação completa do schema JSON retornado pela inteligência artificial e os formatos de exportação.
 
 **Base URL**: `http://localhost:8080/api/v1/backlog`
 
@@ -42,7 +42,7 @@ Gera um Product Backlog estruturado a partir de parâmetros determinísticos em 
 
 ### 2. `POST /api/v1/backlog/generate-with-pdf`
 
-Gera um Product Backlog combinando os parâmetros determinísticos com o texto extraído de um ou mais arquivos PDF anexados.
+Gera um Product Backlog combinando os parâmetros determinísticos com o texto extraído de um ou mais arquivos PDF anexados (suportando texto vetorial e OCR multimodal para PDFs escaneados).
 
 - **Content-Type**: `multipart/form-data`
 - **Partes da Requisição**:
@@ -61,8 +61,21 @@ Recebe um objeto `ProductBacklog` e gera o conteúdo formatado em arquivo Markdo
 - **Body da Requisição**: Objeto `ProductBacklog`.
 - **Headers da Resposta**:
   - `Content-Type`: `text/markdown; charset=UTF-8`
-  - `Content-Disposition`: `attachment; filename="Nome_Do_Projeto.md"`
+  - `Content-Disposition`: `attachment; filename="Nome_Do_Projeto.md"; filename*=UTF-8''...` (RFC 6266)
 - **Resposta de Sucesso (HTTP 200 OK)**: Fluxo de bytes do arquivo Markdown.
+
+---
+
+### 4. `POST /api/v1/backlog/export-pdf`
+
+Recebe um objeto `ProductBacklog` e gera o documento PDF (`.pdf`) com diagramação profissional, identidade visual Slate/Indigo e paginação automática.
+
+- **Content-Type**: `application/json`
+- **Body da Requisição**: Objeto `ProductBacklog`.
+- **Headers da Resposta**:
+  - `Content-Type`: `application/pdf`
+  - `Content-Disposition`: `attachment; filename="Nome_Do_Projeto.pdf"; filename*=UTF-8''...` (RFC 6266)
+- **Resposta de Sucesso (HTTP 200 OK)**: Fluxo de bytes do arquivo PDF.
 
 ---
 
@@ -141,7 +154,7 @@ Quando ocorre uma exceção tratada pelo `GlobalExceptionHandler`, o backend ret
 
 ```json
 {
-  "timestamp": "2026-08-13T10:30:00.123456",
+  "timestamp": "2026-08-14T13:30:00.123456",
   "status": 400,
   "error": "Erro de Validação",
   "errors": {
@@ -156,6 +169,6 @@ Quando ocorre uma exceção tratada pelo `GlobalExceptionHandler`, o backend ret
 | Status Code | Tipo de Erro | Descrição |
 | :--- | :--- | :--- |
 | **`400 Bad Request`** | Erro de Validação | Parâmetros DTO inválidos ou arquivo PDF corrompido/sem extensão válida. |
-| **`422 Unprocessable Entity`** | Backlog Inválido | A IA produziu um backlog que viola validações estruturais (ex: quantidade incorreta de Sprints). |
-| **`502 Bad Gateway`** | Erro no Provedor de IA | Erro de comunicação, limite de quota ou chave de API inválida no Google Gemini. |
+| **`422 Unprocessable Entity`** | Backlog Inválido | A IA produziu um backlog que viola validações estruturais. |
+| **`502 Bad Gateway`** | Erro no Provedor de IA | Erro de comunicação, limite de quota esgotado em todas as chaves ou credencial inválida no Gemini. |
 | **`500 Internal Server Error`** | Erro Inesperado | Erro genérico de execução no servidor backend. |

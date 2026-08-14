@@ -474,6 +474,34 @@
 
 ---
 
+### US-018 — Exportar Backlog em PDF
+
+**Prioridade:** HIGH
+**Story Points:** 5
+
+**Como usuário, quero exportar o backlog em um arquivo PDF profissional para apresentação e documentação.**
+
+**Critérios de aceitação:**
+
+* O PDF deve ser gerado no backend via Apache PDFBox.
+* O documento deve ter diagramação limpa, cabeçalho do projeto, resumo e badges de tecnologias.
+* Épicos, User Stories, Tasks, critérios de aceitação e Sprints devem ser renderizados de forma clara.
+* O layout deve suportar quebras de página dinâmicas mantendo o estado das fontes e cores.
+* O endpoint deve retornar cabeçalhos HTTP de download (`Content-Disposition`) em conformidade com a RFC 6266.
+
+**Tasks:**
+
+* [x] Criar `PdfExportService` com Apache PDFBox.
+* [x] Implementar renderização de cabeçalho, resumo e stack de tecnologias.
+* [x] Implementar renderização de Épicos e User Stories.
+* [x] Implementar renderização de Sprints.
+* [x] Implementar controle de fontes e cores dinâmico em quebras de página (`PageContext`).
+* [x] Implementar endpoint `POST /api/v1/backlog/export-pdf`.
+* [x] Adicionar botão de exportação em PDF no frontend.
+* [x] Criar testes unitários e de integração para exportação PDF.
+
+---
+
 # Roadmap sugerido
 
 ## Sprint 1 — Fundação e IA
@@ -495,8 +523,9 @@
 * US-010
 * US-014
 * US-015
+* US-018
 
-**Resultado esperado:** aplicação capaz de receber PDFs + texto complementar, validar o resultado e gerar `BACKLOG.md`.
+**Resultado esperado:** aplicação capaz de receber PDFs (vetoriais e escaneados) + texto complementar, validar o resultado e exportar para Markdown e PDF.
 
 ## Sprint 3 — Interface e validação real
 
@@ -523,7 +552,7 @@ O MVP do BacklogForge será considerado concluído quando um usuário puder:
 9. solicitar ou não sugestões de tecnologias;
 10. gerar o backlog;
 11. visualizar o resultado estruturado;
-12. baixar o Product Backlog em Markdown;
+12. baixar o Product Backlog em **Markdown (.md)** e em **PDF (.pdf)**;
 13. executar o processo novamente com outra documentação.
 
 O sistema deverá gerar um backlog contendo, no mínimo:

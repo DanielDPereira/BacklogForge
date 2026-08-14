@@ -8,13 +8,15 @@ Este documento descreve detalhadamente a arquitetura do **BacklogForge**, os pad
 
 O BacklogForge foi projetado como uma aplicação web moderna dividida em dois componentes principais (separados em uma estrutura monorepo limpa):
 
-1. **Backend (`backend/`)**: Desenvolvido em **Java 21** com **Spring Boot 3.3.2**, responsável pela validação de parâmetros, processamento de documentos PDF, construção determinística de prompts para IA, integração com o modelo **Google Gemini 1.5 Flash** e geração do Markdown final.
-2. **Frontend (`frontend/`)**: Desenvolvido em **React** com **TypeScript** e **Vite**, responsável por oferecer uma interface rica, responsiva e acessível para entrada de dados e visualização/exportação do backlog.
+1. **Backend (`backend/`)**: Desenvolvido em **Java 21** com **Spring Boot 3.3.2**, responsável pela validação de parâmetros, processamento híbrido de documentos PDF (texto vetorial + OCR visual multimodal), construção determinística de prompts para IA, integração resiliente com o **Google Gemini API** (com rotação de chaves e fallback entre modelos candidatos) e exportação em **Markdown** e **PDF**.
+2. **Frontend (`frontend/`)**: Desenvolvido em **React 18** com **TypeScript** e **Vite**, responsável por oferecer uma interface rica, responsiva e acessível com visualização em abas, formulários validados e exportação em múltiplos formatos.
 
 ```mermaid
 graph TD
     User([Usuário / PO]) -->|Entrada de dados + PDFs| Frontend[React + TypeScript Frontend]
     Frontend -->|POST /api/v1/backlog/generate-with-pdf| WebLayer[Web Layer - REST Controllers]
+    Frontend -->|POST /api/v1/backlog/export-pdf| WebLayer
+    Frontend -->|POST /api/v1/backlog/export-markdown| WebLayer
     
     subgraph Backend Spring Boot
         WebLayer -->|DTO Validado + PDF Text| AppLayer[Application Layer - Use Cases]
@@ -23,8 +25,10 @@ graph TD
         subgraph Infrastructure
             InfraLayer --> PromptBuilder[BacklogPromptBuilder]
             InfraLayer --> PDFBox[PdfExtractorService]
+            InfraLayer --> ApiKeyManager[ApiKeyManager]
             InfraLayer --> GeminiService[GeminiAiService]
             InfraLayer --> MarkdownExport[MarkdownExportService]
+            InfraLayer --> PdfExport[PdfExportService]
         end
         
         subgraph Domain Model
@@ -35,7 +39,7 @@ graph TD
     end
     
     GeminiService -->|REST HTTPS| GeminiAPI((Google Gemini API))
-    AppLayer -->|ProductBacklog Validados| Frontend
+    AppLayer -->|ProductBacklog Validado| Frontend
 ```
 
 ---
@@ -50,24 +54,27 @@ O backend segue os princípios de **Clean Architecture** e **Package by Feature/
 - **Relacionamento por ID em Sprints**: Para evitar duplicação de dados, o modelo `Sprint` referencia as User Stories unicamente através da lista de seus IDs (`userStoryIds`), garantindo consistência no planejamento.
 
 ### 2. Camada de Aplicação (`com.backlogforge.application`)
-- **Princípio da Inversão de Dependência (DIP)**: A aplicação define a interface `AiService`. A lógica de negócio (`GenerateBacklogUseCase`) depende exclusivamente dessa abstração, sem saber se a chamada é feita ao Gemini, OpenAI ou a um mock local de testes.
-- **Orquestração e Validação Pós-Geração**: O caso de uso `GenerateBacklogUseCase` verifica se o backlog produzido pela IA atende a todos os parâmetros determinísticos antes de retorná-lo ao usuário (por exemplo, validando se a quantidade de Sprints corresponde exatamente ao número solicitado).
+- **Princípio da Inversão de Dependência (DIP)**: A aplicação define a interface `AiService`. A lógica de negócio (`GenerateBacklogUseCase`) depende exclusivamente dessa abstração, permitindo alternar ou mocking do provedor de IA.
+- **Orquestração, Validação e Normalização Pós-Geração**: O caso de uso `GenerateBacklogUseCase` valida a resposta da IA e executa o algoritmo de normalização (`normalizeBacklog`) para garantir que o quantitativo de Sprints gerado corresponda exatamente ao número solicitado pelo usuário.
 
 ### 3. Camada de Infraestrutura (`com.backlogforge.infrastructure`)
 - **Engenharia de Prompt (`BacklogPromptBuilder`)**: Monta um prompt estruturado contendo as regras estritas do negócio:
   1. Obrigatoriedade de estrutura hierárquica (Épicos -> User Stories -> Tasks).
   2. Número exato de Sprints.
   3. Calibração da granularidade das Tasks de acordo com o tamanho da equipe.
-  4. **Proibição estrita de atribuição individual de tarefas a nomes de integrantes**.
-  5. Estimativa em Story Points pela sequência Fibonacci (1, 2, 3, 5, 8, 13).
-  6. Resposta em formato JSON estrito sem formatação Markdown circundante.
-- **Extração Híbrida de PDFs (`PdfExtractorService`)**: Utiliza Apache PDFBox 3.x para ler e extrair texto vetorial de PDFs. Caso o PDF seja escaneado ou composto por imagens, o serviço aciona automaticamente a renderização de páginas em PNG (`PDFRenderer`) e realiza transcrição por OCR visual multimodal via Gemini.
-- **Normalização e Resiliência de Sprints (`GenerateBacklogUseCase`)**: Ajusta e normaliza o quantitativo de Sprints retornado pela IA para atender deterministicamente o parâmetro solicitado.
-- **Gerador de Markdown e PDF (`MarkdownExportService` / `PdfExportService`)**: Transforma deterministicamente o objeto `ProductBacklog` em documentos `.md` e `.pdf` com formatação limpa e organizada.
+  4. **Proibição estrita de atribuição individual de tarefas a pessoas**.
+  5. Preservação estrita da stack de tecnologias informada pelo usuário.
+  6. Estimativa em Story Points pela sequência Fibonacci (1, 2, 3, 5, 8, 13).
+  7. Resposta em formato JSON estrito sem formatação Markdown circundante.
+- **Extração Híbrida de PDFs e OCR (`PdfExtractorService`)**: Utiliza Apache PDFBox 3.0.2 para extrair texto vetorial. Caso o documento seja escaneado ou baseado em imagem (texto vetorial < 50 caracteres), o serviço renderiza as páginas em PNG (`PDFRenderer` a 150 DPI) e aciona a visão multimodal do Gemini para realizar OCR do conteúdo.
+- **Gerenciamento Resiliente de Chaves (`ApiKeyManager` & `GeminiAiService`)**: Suporta múltiplas chaves de API (`GEMINI_API_KEYS` ou `GEMINI_API_KEY` separadas por vírgula). Quando ocorre um limite de cota (HTTP 429), a chave ativada entra em cooldown de 60 segundos e o sistema alterna automaticamente para a próxima chave e modelo candidato disponível (`gemini-2.5-flash`, `gemini-2.5-pro`, `gemini-3.6-flash`, `gemini-flash-latest`).
+- **Serviço de Exportação em PDF (`PdfExportService`)**: Desenvolvido com Apache PDFBox, constrói um PDF elegante com tema Slate/Indigo, paginação dinâmica e gerenciamento de estado de fontes (`PageContext`) imune a exceções de quebra de página ou codificação ISO-8859-1/WinAnsi.
+- **Serviço de Exportação em Markdown (`MarkdownExportService`)**: Transforma deterministicamente o objeto `ProductBacklog` em um documento `.md` perfeitamente estruturado.
 
 ### 4. Camada Web (`com.backlogforge.web`)
 - **Contratos DTO com Bean Validation**: A classe `GenerateBacklogRequest` utiliza anotações Bean Validation (`@NotBlank`, `@Min`, `@Max`, `@Size`) para rejeitar entradas inválidas na borda da aplicação.
 - **Tratamento Global de Exceções (`GlobalExceptionHandler`)**: Intercepta exceções da aplicação (`InvalidBacklogException`, `InvalidDocumentException`, `AiProviderException`) e retorna respostas JSON em formato padronizado com códigos HTTP apropriados (400, 422, 502, 500).
+- **Cabeçalhos HTTP Conformes com RFC 6266**: Os endpoints de exportação utilizam `ContentDisposition.attachment().filename(..., StandardCharsets.UTF_8).build()` para prevenir erros de codificação de cabeçalho no Tomcat.
 
 ---
 
@@ -81,10 +88,10 @@ O frontend foi desenvolvido com foco em performance, acessibilidade e riqueza es
 - **Lucide React**: Biblioteca de ícones vetoriais modernos.
 
 ### 2. Organização dos Componentes
-- `Header.tsx`: Identidade visual da aplicação e status de tecnologias.
+- `Header.tsx`: Identidade visual da aplicação e indicação de status.
 - `ProjectForm.tsx`: Formulário interativo com validações, controles numéricos, seletor de tecnologias com tags e suporte a texto livre.
 - `PdfUploader.tsx`: Drag-and-drop de PDFs com suporte a múltiplos arquivos, indicação de tamanho em MB e opção de remoção individual.
-- `BacklogViewer.tsx`: Painel com navegação em abas (*Visão por Épicos* vs. *Quadro de Sprints*), botão de download do `.md` e cópia do JSON.
+- `BacklogViewer.tsx`: Painel com navegação em abas (*Visão por Épicos* vs. *Quadro de Sprints*), botões de download em **PDF (.pdf)**, **Markdown (.md)**, cópia de JSON e reinício de projeto.
 - `EpicCard.tsx`: Cards sanfonados (accordion) de Épicos e User Stories com pílulas coloridas para cada prioridade (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`).
 - `SprintBoard.tsx`: Visualização em cards de Sprints exibindo o objetivo e o total de Story Points alocados.
 - `LoadingOverlay.tsx`: Tela de carregamento com dicas rotativas sobre a IA durante o processamento.
@@ -93,6 +100,7 @@ O frontend foi desenvolvido com foco em performance, acessibilidade e riqueza es
 
 ## 🔒 Segurança e Chaves de API
 
-1. **Sem Chaves no Código**: A aplicação **nunca** armazena chaves de API nos arquivos do repositório.
-2. **Leitura via Ambiente**: A chave da API do Gemini é lida através da variável de ambiente `GEMINI_API_KEY` (configurada via arquivo local `.env` ignorado no `.git`).
-3. **Template Versionado**: O repositório disponibiliza um arquivo `.env.example` servindo como modelo explicativo para os desenvolvedores.
+1. **Sem Credenciais no Código**: O código-fonte não contém chaves de API codificadas.
+2. **Carregamento Seguro por Ambiente**: As chaves são lidas do arquivo `.env` (ignorado pelo `.gitignore`) utilizando `Dotenv`.
+3. **Múltiplas Chaves para Rotação**: Suporta `GEMINI_API_KEYS=key1,key2,key3` para alta disponibilidade em ambientes de cota gratuita.
+4. **Template Versionado**: O repositório fornece o modelo `.env.example` devidamente documentado.

@@ -12,8 +12,8 @@ Antes de começar, certifique-se de ter os seguintes softwares instalados:
    - Verifique a instalação no terminal com: `java -version`
 2. **Node.js (versão 18.0 ou superior)** e **NPM**:
    - Verifique com: `node -v` e `npm -v`
-3. **Chave de API do Google Gemini**:
-   - Obtenha uma chave gratuita no [Google AI Studio](https://aistudio.google.com/).
+3. **Chave(s) de API do Google Gemini**:
+   - Obtenha uma ou mais chaves gratuitas no [Google AI Studio](https://aistudio.google.com/).
 
 ---
 
@@ -25,16 +25,16 @@ O projeto utiliza um arquivo `.env` na raiz do repositório para carregar variá
    ```bash
    cp .env.example .env
    ```
-2. Abra o arquivo `.env` e insira sua chave da API do Gemini:
+2. Abra o arquivo `.env` e insira sua(s) chave(s) da API do Gemini:
    ```env
    # Configurações do Provedor de IA (Google Gemini API)
-   # Chave única:
+   # Opção 1: Chave única
    GEMINI_API_KEY=AIzaSyYourActualGeminiApiKeyHere
 
-   # Múltiplas chaves separadas por vírgula para suporte a rotação automática de cota (HTTP 429):
+   # Opção 2: Múltiplas chaves separadas por vírgula para rotação automática de cota (HTTP 429 / Rate Limit):
    # GEMINI_API_KEYS=chave1,chave2,chave3
    
-   # Modelo preferencial configurado (com fallback automático para gemini-2.5-pro, gemini-3.6-flash, etc.)
+   # Modelo preferencial configurado (com fallback automático para gemini-2.5-pro, gemini-3.6-flash, gemini-flash-latest)
    GEMINI_MODEL=gemini-2.5-flash
 
    # Configurações do Servidor Backend
@@ -54,11 +54,7 @@ O backend possui o **Maven Wrapper** incluído, eliminando a necessidade de inst
    ```powershell
    cd backend
    ```
-2. Defina a variável de ambiente no seu terminal (ou utilize o arquivo `.env`):
-   ```powershell
-   $env:GEMINI_API_KEY="SuaChaveDoGeminiAqui"
-   ```
-3. Execute o servidor:
+2. Execute o servidor:
    ```powershell
    .\mvnw.cmd spring-boot:run
    ```
@@ -71,7 +67,6 @@ O backend possui o **Maven Wrapper** incluído, eliminando a necessidade de inst
    ```
 2. Execute o servidor:
    ```bash
-   export GEMINI_API_KEY="SuaChaveDoGeminiAqui"
    ./mvnw spring-boot:run
    ```
 
@@ -105,7 +100,7 @@ Para executar a suíte de testes unitários:
 O frontend estará acessível no navegador em: `http://localhost:5173`
 
 ### Compilando o Frontend para Produção:
- Para validar a compilação do TypeScript e a geração do bundle estático:
+Para validar a compilação do TypeScript e a geração do bundle estático:
 ```bash
 npm run build
 ```
@@ -138,7 +133,8 @@ curl -X POST http://localhost:8080/api/v1/backlog/generate \
 
 | Problema | Causa Provável | Solução |
 | :--- | :--- | :--- |
-| **`GEMINI_API_KEY não configurada`** | A variável de ambiente não foi definida no terminal ou no `.env`. | Certifique-se de definir `$env:GEMINI_API_KEY="sua_chave"` no mesmo terminal onde o Spring Boot é iniciado. |
-| **`Porta 8080 já em uso`** | Outro processo está utilizando a porta 8080. | Altere o valor de `SERVER_PORT` no `.env` ou feche a aplicação conflitante. |
-| **`Erro de CORS no Frontend`** | O backend não permitiu a origem do frontend. | O `BacklogController` já possui a anotação `@CrossOrigin(origins = "*")` habilitada por padrão. |
-| **`Erro de leitura do arquivo PDF`** | O PDF enviado está protegido por senha ou corrompido. | Certifique-se de que o PDF contém texto selecionável e não é uma imagem rasterizada sem OCR. |
+| **`GEMINI_API_KEY não configurada`** | Variável de ambiente ausente no arquivo `.env`. | Certifique-se de configurar `GEMINI_API_KEY` ou `GEMINI_API_KEYS` no arquivo `.env` na raiz do projeto. |
+| **`Todas as tentativas de geração falharam (HTTP 429)`** | Limite de cota esgotado na chave única. | Configure múltiplas chaves separadas por vírgula em `GEMINI_API_KEYS` no arquivo `.env` e reinicie o Spring Boot. |
+| **`Porta 8080 já em uso`** | Outro processo está utilizando a porta 8080. | Altere o valor de `SERVER_PORT` no `.env` ou encerre a aplicação conflitante. |
+| **`Erro de CORS no Frontend`** | O backend não permitiu a origem do frontend. | O `BacklogController` possui a anotação `@CrossOrigin(origins = "*")` habilitada por padrão. |
+| **`Erro de leitura do arquivo PDF`** | Arquivo corrompido ou protegido por senha. | O BacklogForge suporta texto vetorial e documentos escaneados/imagens via OCR multimodal. Verifique se o arquivo não possui senha de proteção. |
