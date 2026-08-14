@@ -69,10 +69,14 @@ public class BacklogController {
         String markdown = markdownExportService.generateMarkdown(backlog);
         byte[] bytes = markdown.getBytes(StandardCharsets.UTF_8);
 
-        String filename = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + ".md";
+        String rawName = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + ".md";
+        org.springframework.http.ContentDisposition contentDisposition = org.springframework.http.ContentDisposition
+                .attachment()
+                .filename(rawName, StandardCharsets.UTF_8)
+                .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .contentType(MediaType.parseMediaType("text/markdown; charset=UTF-8"))
                 .body(bytes);
     }
@@ -81,10 +85,14 @@ public class BacklogController {
     public ResponseEntity<byte[]> exportPdf(@RequestBody ProductBacklog backlog) {
         byte[] pdfBytes = pdfExportService.generatePdf(backlog);
 
-        String filename = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + ".pdf";
+        String rawName = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + ".pdf";
+        org.springframework.http.ContentDisposition contentDisposition = org.springframework.http.ContentDisposition
+                .attachment()
+                .filename(rawName, StandardCharsets.UTF_8)
+                .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
     }
