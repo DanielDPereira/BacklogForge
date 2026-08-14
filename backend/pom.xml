@@ -48,6 +48,13 @@
             <version>3.0.2</version>
         </dependency>
 
+        <!-- OpenAPI 3.0 / Swagger UI (Springdoc) -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.6.0</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

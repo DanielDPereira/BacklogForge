@@ -71,6 +71,8 @@ O backend possui o **Maven Wrapper** incluído, eliminando a necessidade de inst
    ```
 
 O backend estará ativo e ouvindo requisições na porta **8080**: `http://localhost:8080`
+- 📑 **Swagger UI (Documentação Interativa da API)**: `http://localhost:8080/swagger-ui.html`
+- 📡 **OpenAPI 3.0 Spec**: `http://localhost:8080/v3/api-docs`
 
 ### Rodando os Testes Automatizados do Backend:
 Para executar a suíte de testes unitários:
