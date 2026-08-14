@@ -484,10 +484,12 @@ export const EpicCard: React.FC<EpicCardProps> = ({
                                     <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#a7f3d0' }}>{task.id}</span>
                                     <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{task.priority}</span>
                                   </div>
-                                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f1f5f9' }}>{task.title}</div>
-                                  {task.description && (
-                                    <div style={{ fontSize: '0.775rem', color: '#94a3b8', marginTop: '4px' }}>{task.description}</div>
-                                  )}
+                                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f1f5f9', marginBottom: '2px' }}>
+                                    {task.title || 'Tarefa Operacional'}
+                                  </div>
+                                  <div style={{ fontSize: '0.775rem', color: '#cbd5e1', marginTop: '2px', lineHeight: 1.4 }}>
+                                    {task.description || task.title || 'Desenvolvimento técnico e testes operacionais para esta funcionalidade.'}
+                                  </div>
                                 </>
                               )}
                             </div>

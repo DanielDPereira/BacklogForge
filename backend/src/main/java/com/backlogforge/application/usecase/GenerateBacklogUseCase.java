@@ -65,11 +65,55 @@ public class GenerateBacklogUseCase {
             currentSprints = new java.util.ArrayList<>(currentSprints.subList(0, requestedCount));
         }
 
+        List<com.backlogforge.domain.Epic> normalizedEpics = new ArrayList<>();
+        if (raw.epics() != null) {
+            for (com.backlogforge.domain.Epic epic : raw.epics()) {
+                List<com.backlogforge.domain.UserStory> normalizedStories = new ArrayList<>();
+                if (epic.userStories() != null) {
+                    for (com.backlogforge.domain.UserStory us : epic.userStories()) {
+                        List<com.backlogforge.domain.Task> normalizedTasks = new ArrayList<>();
+                        if (us.tasks() != null) {
+                            for (com.backlogforge.domain.Task task : us.tasks()) {
+                                String title = (task.title() != null && !task.title().isBlank())
+                                        ? task.title()
+                                        : "Desenvolvimento técnico do requisito " + us.id();
+                                String description = (task.description() != null && !task.description().isBlank())
+                                        ? task.description()
+                                        : "Execução operacional, implementação e testes funcionais para: " + title;
+
+                                normalizedTasks.add(new com.backlogforge.domain.Task(
+                                        task.id(),
+                                        title,
+                                        description,
+                                        task.priority() != null ? task.priority() : com.backlogforge.domain.Priority.MEDIUM
+                                ));
+                            }
+                        }
+                        normalizedStories.add(new com.backlogforge.domain.UserStory(
+                                us.id(),
+                                us.title(),
+                                us.description(),
+                                us.priority(),
+                                us.storyPoints(),
+                                us.acceptanceCriteria(),
+                                normalizedTasks
+                        ));
+                    }
+                }
+                normalizedEpics.add(new com.backlogforge.domain.Epic(
+                        epic.id(),
+                        epic.title(),
+                        epic.description(),
+                        normalizedStories
+                ));
+            }
+        }
+
         return new ProductBacklog(
                 raw.projectName() != null ? raw.projectName() : request.projectName(),
                 raw.summary(),
                 raw.suggestedTechnologies(),
-                raw.epics(),
+                normalizedEpics,
                 currentSprints
         );
     }

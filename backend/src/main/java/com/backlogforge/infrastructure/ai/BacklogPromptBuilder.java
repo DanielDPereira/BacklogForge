@@ -34,6 +34,8 @@ public class BacklogPromptBuilder {
 
                 3. REGRAS DE TAREFAS E EQUIPE:
                    - O tamanho da equipe é de %d integrante(s). Calibre a granularidade e o nível de detalhe das Tasks para este tamanho de equipe.
+                   - É ESTRITAMENTE OBRIGATÓRIO que TODA E QUALQUER TASK contenha um título objetivo no campo `title` E UMA DESCRIÇÃO DETALHADA, AUTOEXPLICATIVA E TÉCNICA no campo `description`.
+                   - É ESTRITAMENTE PROIBIDO gerar Tasks com o campo `description` em branco, nulo ou omitido. A descrição da Task DEVE explicar a ação técnica ou operacional a ser realizada (ex: "Implementar a rota POST /api/v1/atestados com validação de payload em JSON e salvamento no banco SQLite").
                    - É ESTRITAMENTE PROIBIDO atribuir tarefas a pessoas específicas ou mencionar nomes de integrantes.
 
                 4. TECNOLOGIAS:
