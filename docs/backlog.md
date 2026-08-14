@@ -530,6 +530,32 @@
 
 ---
 
+### US-020 — Exportação em CSV Universal (Jira / Trello / Azure DevOps)
+
+**Prioridade:** HIGH
+**Story Points:** 3
+
+**Como usuário, quero exportar o backlog em um arquivo CSV formatado para importação direta em ferramentas de gestão ágil como Jira, Trello e Azure DevOps.**
+
+**Critérios de aceitação:**
+
+* O CSV deve conter os cabeçalhos padrão: `Issue Type`, `Issue Id`, `Parent Id`, `Summary`, `Description`, `Priority`, `Story Points`, `Sprint`, `Epic Name`.
+* Mapeamento automático de tipos (`Epic`, `Story`, `Sub-task`).
+* Vínculos de `Parent Id` configurados (Stories vinculadas aos Épicos; Sub-tasks vinculadas às Stories).
+* Formatação de UTF-8 com BOM (`\uFEFF`) para preservar acentuação no Excel, Jira e Trello.
+* Botão de download "Baixar CSV (Jira/Trello)" disponibilizado na interface web.
+* Endpoint `POST /api/v1/backlog/export-csv` integrado e testado.
+
+**Tasks:**
+
+* [x] Criar `CsvExportService` com suporte a BOM UTF-8 e escape de campos CSV.
+* [x] Implementar endpoint `POST /api/v1/backlog/export-csv` no `BacklogController.java`.
+* [x] Adicionar método `exportCsv` no `api.ts` do frontend.
+* [x] Adicionar botão "Baixar CSV (Jira/Trello)" no `BacklogViewer.tsx`.
+* [x] Criar testes unitários e de integração em `CsvExportServiceTest.java`.
+
+---
+
 # Roadmap sugerido
 
 ## Sprint 1 — Fundação e IA

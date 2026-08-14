@@ -2,6 +2,7 @@ package com.backlogforge.web;
 
 import com.backlogforge.application.usecase.GenerateBacklogUseCase;
 import com.backlogforge.domain.ProductBacklog;
+import com.backlogforge.infrastructure.export.CsvExportService;
 import com.backlogforge.infrastructure.export.MarkdownExportService;
 import com.backlogforge.infrastructure.export.PdfExportService;
 import com.backlogforge.infrastructure.pdf.PdfExtractorService;
@@ -30,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * Controller REST responsável por endpoints de geração, upload de documentos e exportação em Markdown e PDF.
+ * Controller REST responsável por endpoints de geração, upload de documentos e exportação em Markdown, PDF e CSV (Jira/Trello).
  */
 @RestController
 @RequestMapping("/api/v1/backlog")
@@ -42,17 +43,20 @@ public class BacklogController {
     private final PdfExtractorService pdfExtractorService;
     private final MarkdownExportService markdownExportService;
     private final PdfExportService pdfExportService;
+    private final CsvExportService csvExportService;
 
     public BacklogController(
             GenerateBacklogUseCase generateBacklogUseCase,
             PdfExtractorService pdfExtractorService,
             MarkdownExportService markdownExportService,
-            PdfExportService pdfExportService
+            PdfExportService pdfExportService,
+            CsvExportService csvExportService
     ) {
         this.generateBacklogUseCase = generateBacklogUseCase;
         this.pdfExtractorService = pdfExtractorService;
         this.markdownExportService = markdownExportService;
         this.pdfExportService = pdfExportService;
+        this.csvExportService = csvExportService;
     }
 
     @PostMapping("/generate")
@@ -145,5 +149,31 @@ public class BacklogController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
+    }
+
+    @PostMapping("/export-csv")
+    @Operation(
+            summary = "Exportar Backlog para formato CSV universal (Jira / Trello)",
+            description = "Recebe um objeto Product Backlog estruturado e gera um arquivo CSV (.csv) formatado e otimizado para importação direta em ferramentas como Jira, Trello e Azure DevOps."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Arquivo CSV (.csv) gerado com sucesso.", content = @Content(mediaType = "text/csv; charset=UTF-8")),
+            @ApiResponse(responseCode = "500", description = "Erro ao gerar a estrutura CSV do Backlog.")
+    })
+    public ResponseEntity<byte[]> exportCsv(
+            @RequestBody ProductBacklog backlog
+    ) {
+        byte[] csvBytes = csvExportService.generateCsv(backlog);
+
+        String rawName = (backlog.projectName() != null ? backlog.projectName().replaceAll("\\s+", "_") : "Backlog") + "_Jira.csv";
+        ContentDisposition contentDisposition = ContentDisposition
+                .attachment()
+                .filename(rawName, StandardCharsets.UTF_8)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
+                .body(csvBytes);
     }
 }

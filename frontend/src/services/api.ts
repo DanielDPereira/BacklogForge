@@ -77,3 +77,19 @@ export async function exportPdf(backlog: ProductBacklog): Promise<Blob> {
 
   return response.blob();
 }
+
+export async function exportCsv(backlog: ProductBacklog): Promise<Blob> {
+  const response = await fetch(`${API_BASE_URL}/export-csv`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(backlog),
+  });
+
+  if (!response.ok) {
+    throw new Error('Falha ao gerar arquivo CSV para download.');
+  }
+
+  return response.blob();
+}
