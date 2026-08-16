@@ -556,69 +556,70 @@
 
 ---
 
-# Roadmap sugerido
+# Roadmap e Status de Execução
 
-## Sprint 1 — Fundação e IA
+## Sprint 1 — Fundação e IA (Concluída ✅)
 
-* US-001
-* US-002
-* US-003
-* US-007
-* US-008
-* US-009
+* [x] US-001 — Estruturar o projeto Spring Boot
+* [x] US-002 — Configurar Spring AI e Gemini
+* [x] US-003 — Criar contrato de entrada da geração
+* [x] US-007 — Definir schema do backlog
+* [x] US-008 — Criar prompt de geração do backlog
+* [x] US-009 — Gerar backlog estruturado
 
-**Resultado esperado:** backend capaz de receber parâmetros e gerar um backlog JSON estruturado utilizando Spring AI e Gemini.
+**Resultado alcançado:** Backend funcional com Spring Boot 3.3.2 e Java 21, gerando backlog em JSON estruturado com IA.
 
-## Sprint 2 — Documentos e exportação
+## Sprint 2 — Documentos e Exportação (Concluída ✅)
 
-* US-004
-* US-005
-* US-006
-* US-010
-* US-014
-* US-015
-* US-018
+* [x] US-004 — Receber arquivos PDF (texto vetorial e OCR multimodal)
+* [x] US-005 — Receber contexto adicional em texto
+* [x] US-006 — Consolidar contexto do projeto
+* [x] US-010 — Validar backlog gerado
+* [x] US-014 — Gerar Markdown (.md)
+* [x] US-015 — Implementar tratamento de erros
+* [x] US-018 — Exportar Backlog em PDF (.pdf)
 
-**Resultado esperado:** aplicação capaz de receber PDFs (vetoriais e escaneados) + texto complementar, validar o resultado e exportar para Markdown e PDF.
+**Resultado alcançado:** Processamento híbrido de PDFs (vetorial + OCR visual Gemini), exportação profissional em Markdown e PDF com paginação inteligente e headers RFC 6266.
 
-## Sprint 3 — Interface e validação real
+## Sprint 3 — Interface e Validação Real (Concluída ✅)
 
-* US-011
-* US-012
-* US-013
-* US-016
-* US-017
+* [x] US-011 — Criar aplicação React
+* [x] US-012 — Criar formulário de configuração
+* [x] US-013 — Exibir backlog gerado (Épicos e Sprints)
+* [x] US-016 — Implementar gerenciamento resiliente de chaves de API (Multi-Key)
+* [x] US-017 — Validar BacklogForge com um projeto real (APIs FATEC)
 
-**Resultado esperado:** aplicação web funcional e validada com um projeto real.
+**Resultado alcançado:** Interface web React 18 + TypeScript rica e moderna com rotação de chaves e validação prática.
 
-# Critério de conclusão do MVP
+## Sprint 4 — Extensões: Edição Interativa e Exportação Ágil (Concluída ✅)
 
-O MVP do BacklogForge será considerado concluído quando um usuário puder:
+* [x] US-019 — Edição Inline Interativa do Backlog no Frontend
+* [x] US-020 — Exportação em CSV Universal (Jira / Trello / Azure DevOps)
 
-1. acessar a interface web;
-2. informar o nome do projeto;
-3. enviar um ou mais PDFs;
-4. inserir informações complementares em texto;
-5. definir o número de Sprints;
-6. definir a duração das Sprints;
-7. informar o tamanho da equipe;
-8. informar as tecnologias;
-9. solicitar ou não sugestões de tecnologias;
-10. gerar o backlog;
-11. visualizar o resultado estruturado;
-12. baixar o Product Backlog em **Markdown (.md)** e em **PDF (.pdf)**;
-13. executar o processo novamente com outra documentação.
+**Resultado alcançado:** Edição em tempo real de épicos, histórias, tarefas, critérios e sprints antes da exportação, além de download em CSV compatível com Jira e Trello.
 
-O sistema deverá gerar um backlog contendo, no mínimo:
+---
 
-* Epics;
-* User Stories;
-* Tasks;
-* critérios de aceitação;
-* prioridade;
-* Story Points;
-* Sprints;
-* objetivos das Sprints;
-* distribuição das User Stories entre as Sprints.
+# Status do MVP: 100% Concluído e Validado 🎉
 
-A atribuição de Tasks a pessoas e a execução automática das tarefas não fazem parte do produto.
+Todos os 13 critérios de conclusão do MVP foram totalmente atingidos e homologados:
+
+1. [x] Acessar a interface web moderna e responsiva;
+2. [x] Informar o nome do projeto;
+3. [x] Enviar um ou mais PDFs (com drag-and-drop e suporte a OCR multimodal);
+4. [x] Inserir informações complementares em texto;
+5. [x] Definir o número de Sprints (com normalização determinística);
+6. [x] Definir a duração das Sprints;
+7. [x] Informar o tamanho da equipe;
+8. [x] Informar as tecnologias do projeto;
+9. [x] Solicitar ou não sugestões de tecnologias;
+10. [x] Gerar o backlog estruturado via IA;
+11. [x] Visualizar o resultado em abas com modo de edição inline interativo;
+12. [x] Baixar o Product Backlog em **Markdown (.md)**, **PDF (.pdf)** e **CSV (.csv para Jira/Trello)**;
+13. [x] Executar o processo novamente com nova documentação de forma limpa.
+
+O backlog gerado contém integralmente:
+- Épicos e User Stories com prioridade e pontuação Fibonacci;
+- Tasks técnicas autoexplicativas com níveis de prioridade;
+- Critérios de aceitação detalhados;
+- Sprints com metas claras e alocação por referência (`userStoryIds`).

@@ -101,9 +101,16 @@ A Inteligência Artificial retorna os dados seguindo um **schema JSON fixo**, va
 
 Inicialmente, são disponibilizadas as seguintes formas de saída e exportação:
 
+## Saída Estruturada e Exportação
+
+A Inteligência Artificial retorna os dados seguindo um **schema JSON fixo**, validado pelo backend antes da exibição.
+
+São disponibilizadas as seguintes formas de saída e exportação:
+
 - **JSON Estruturado** (visualização e cópia via Clipboard);
 - **Arquivo Markdown (`.md`)** gerado deterministicamente pelo `MarkdownExportService`;
-- **Arquivo PDF (`.pdf`)** com layout profissional, gerado via Apache PDFBox (`PdfExportService`).
+- **Arquivo PDF (`.pdf`)** com layout profissional Slate/Indigo e paginação dinâmica, gerado via Apache PDFBox (`PdfExportService`);
+- **Arquivo CSV Universal (`.csv`)** com UTF-8 BOM, otimizado para importação direta no **Jira**, **Trello** e **Azure DevOps** (`CsvExportService`).
 
 ## Arquitetura
 
@@ -123,28 +130,30 @@ A interface permite:
 - informar as tecnologias utilizadas ou solicitar sugestões;
 - gerar o backlog com feedback visual durante o processamento;
 - visualizar o resultado em abas (*Épicos & User Stories* vs. *Planejamento de Sprints*);
-- baixar o backlog em **Markdown (.md)** e em **PDF (.pdf)**;
+- **editar interativamente o backlog de forma inline** (nome do projeto, resumo, épicos, histórias, tarefas, critérios de aceitação e metas de sprint);
+- baixar o backlog em **PDF (.pdf)**, **Markdown (.md)** e **CSV Jira/Trello (.csv)**;
 - copiar o JSON do backlog.
 
 ### Backend
 
-O backend é desenvolvido utilizando **Java 21**, **Spring Boot 3.3.2**, **Spring AI**, **Apache PDFBox 3.0.2** e **Bean Validation**.
+O backend é desenvolvido utilizando **Java 21**, **Spring Boot 3.3.2**, **Spring AI**, **Apache PDFBox 3.0.2**, **Springdoc OpenAPI 3.0** e **Bean Validation**.
 
 O backend é responsável por:
 
 - receber e validar as requisições HTTP REST;
+- expor documentação Swagger UI interativa (`/swagger-ui.html`) e especificação OpenAPI 3.0 (`/v3/api-docs`);
 - extrair texto vetorial de PDFs ou executar OCR multimodal para documentos escaneados;
 - consolidar o contexto e parâmetros;
-- executar chamadas resilientes ao Gemini com rotação de chaves (`ApiKeyManager`);
+- executar chamadas resilientes ao Gemini com rotação de chaves e failover de modelos (`ApiKeyManager` e `GeminiAiService`);
 - validar e normalizar a resposta JSON gerada pela IA;
-- exportar o backlog para formatos Markdown (`.md`) e PDF (`.pdf`);
+- exportar o backlog para formatos Markdown (`.md`), PDF (`.pdf`) e CSV (`.csv`);
 - retornar as respostas estruturadas ao frontend.
 
 ## Provedores e Chaves de API (Resiliência & Multi-Key Fallback)
 
 A aplicação inclui uma camada de abstração para gerenciamento de credenciais do Gemini (`ApiKeyManager`).
 
-Essa camada suporta múltiplas chaves de API (`GEMINI_API_KEYS` ou `GEMINI_API_KEY` separadas por vírgula) e realiza rotação e fallback automático quando uma chave atinge o limite de uso (HTTP 429 / Rate Limit), entrando em cooldown de 60 segundos antes de reativar a chave.
+Essa camada suporta múltiplas chaves de API (`GEMINI_API_KEYS` ou `GEMINI_API_KEY` separadas por vírgula) e realiza rotação e fallback automático quando uma chave atinge o limite de uso (HTTP 429 / Rate Limit) ou instabilidade de alta demanda (HTTP 503 High Demand), alternando entre modelos candidatos (`gemini-2.5-flash`, `gemini-2.5-pro`, `gemini-3.6-flash`, `gemini-flash-latest`).
 
 As credenciais não são armazenadas no código-fonte e são lidas a partir de variáveis de ambiente do arquivo `.env`.
 

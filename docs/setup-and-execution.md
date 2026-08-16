@@ -129,6 +129,24 @@ curl -X POST http://localhost:8080/api/v1/backlog/generate \
   }'
 ```
 
+### Exemplo de Exportação CSV para Jira/Trello (POST `/api/v1/backlog/export-csv`):
+
+```bash
+curl -X POST http://localhost:8080/api/v1/backlog/export-csv \
+  -H "Content-Type: application/json" \
+  -d @backlog.json \
+  --output backlog_jira.csv
+```
+
+### Exemplo de Exportação PDF (POST `/api/v1/backlog/export-pdf`):
+
+```bash
+curl -X POST http://localhost:8080/api/v1/backlog/export-pdf \
+  -H "Content-Type: application/json" \
+  -d @backlog.json \
+  --output backlog.pdf
+```
+
 ---
 
 ## ❓ Solução de Problemas (Troubleshooting)

@@ -81,6 +81,29 @@ Recebe um objeto `ProductBacklog` e gera o documento PDF (`.pdf`) com diagramaç
 
 ---
 
+### 5. `POST /api/v1/backlog/export-csv`
+
+Recebe um objeto `ProductBacklog` e gera um arquivo CSV (`.csv`) universal, estruturado e com BOM UTF-8 (`\uFEFF`), formatado especialmente para importação direta em ferramentas de gestão de projetos como **Jira**, **Trello** e **Azure DevOps**.
+
+- **Content-Type**: `application/json`
+- **Body da Requisição**: Objeto `ProductBacklog`.
+- **Headers da Resposta**:
+  - `Content-Type`: `text/csv; charset=UTF-8`
+  - `Content-Disposition`: `attachment; filename="Nome_Do_Projeto_Jira.csv"; filename*=UTF-8''...` (RFC 6266)
+- **Estrutura das Colunas Geradas**:
+  - `Issue Type`: Tipo de item (`Epic`, `Story` ou `Sub-task`).
+  - `Issue Id`: Identificador único (`EPIC-001`, `US-001`, `TASK-001`).
+  - `Parent Id`: Identificador do item pai (Stories referenciam Épicos; Sub-tasks referenciam Stories).
+  - `Summary`: Título do item.
+  - `Description`: Descrição detalhada e critérios de aceitação.
+  - `Priority`: Prioridade mapeada (`Highest`, `High`, `Medium`, `Low`).
+  - `Story Points`: Pontuação Fibonacci atribuída à User Story.
+  - `Sprint`: Nome da Sprint à qual o item está alocado (ex: `Sprint 1`).
+  - `Epic Name`: Nome do Épico para visualizações em boards do Jira/Trello.
+- **Resposta de Sucesso (HTTP 200 OK)**: Fluxo de bytes do arquivo CSV formatado.
+
+---
+
 ## 🧩 Schema JSON do `ProductBacklog`
 
 A Inteligência Artificial (Gemini) é orientada por um prompt estruturado a retornar estritamente a seguinte estrutura JSON:
