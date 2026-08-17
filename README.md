@@ -49,26 +49,28 @@ graph TD
     Frontend -->|POST /api/v1/backlog/export-markdown| WebLayer
     Frontend -->|POST /api/v1/backlog/export-csv| WebLayer
     
-    subgraph Backend Spring Boot 3.3.2
+    subgraph BackendApp ["Backend (Spring Boot 3.3.2)"]
         WebLayer -->|DTO Validado + PDF Text| AppLayer[Application Layer - Use Cases]
         WebLayer --> Swagger[Springdoc OpenAPI 3.0 / Swagger UI]
-        AppLayer -->|Instruções & Contexto| InfraLayer[Infrastructure Layer]
         
-        subgraph Infrastructure
-            InfraLayer --> PromptBuilder[BacklogPromptBuilder]
-            InfraLayer --> PDFBox[PdfExtractorService + OCR Multimodal]
-            InfraLayer --> ApiKeyManager[ApiKeyManager - Multi-Key Rotation]
-            InfraLayer --> GeminiService[GeminiAiService - Model Failover]
-            InfraLayer --> MarkdownExport[MarkdownExportService]
-            InfraLayer --> PdfExport[PdfExportService]
-            InfraLayer --> CsvExport[CsvExportService - Jira/Trello]
+        subgraph InfraGroup ["Camada de Infraestrutura"]
+            PromptBuilder[BacklogPromptBuilder]
+            PDFBox[PdfExtractorService + OCR Multimodal]
+            ApiKeyManager[ApiKeyManager - Multi-Key Rotation]
+            GeminiService[GeminiAiService - Model Failover]
+            MarkdownExport[MarkdownExportService]
+            PdfExport[PdfExportService]
+            CsvExport[CsvExportService - Jira/Trello]
         end
         
-        subgraph Domain
-            Domain[ProductBacklog / Epic / UserStory / Task / Sprint]
+        subgraph DomainLayer ["Camada de Domínio (Java 21 Records)"]
+            DomainEntities["ProductBacklog / Epic / UserStory / Task / Sprint"]
         end
         
-        GeminiService -->|JSON Resposta| Domain
+        AppLayer -->|Extração de PDF| PDFBox
+        AppLayer -->|Construção do Prompt| PromptBuilder
+        AppLayer -->|Orquestração IA| GeminiService
+        GeminiService -->|JSON Resposta| DomainEntities
     end
     
     GeminiService -->|HTTPS REST| GeminiAPI((Google Gemini API))

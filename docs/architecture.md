@@ -19,27 +19,29 @@ graph TD
     Frontend -->|POST /api/v1/backlog/export-markdown| WebLayer
     Frontend -->|POST /api/v1/backlog/export-csv| WebLayer
     
-    subgraph Backend Spring Boot
+    subgraph BackendApp ["Backend (Spring Boot 3.3.2)"]
         WebLayer -->|DTO Validado + PDF Text| AppLayer[Application Layer - Use Cases]
         WebLayer --> Swagger[Springdoc OpenAPI 3.0 / Swagger UI]
-        AppLayer -->|Instruções & Contexto| InfraLayer[Infrastructure Layer]
         
-        subgraph Infrastructure
-            InfraLayer --> PromptBuilder[BacklogPromptBuilder]
-            InfraLayer --> PDFBox[PdfExtractorService]
-            InfraLayer --> ApiKeyManager[ApiKeyManager]
-            InfraLayer --> GeminiService[GeminiAiService]
-            InfraLayer --> MarkdownExport[MarkdownExportService]
-            InfraLayer --> PdfExport[PdfExportService]
-            InfraLayer --> CsvExport[CsvExportService]
-            InfraLayer --> Deserializers[StringListDeserializer]
+        subgraph InfraGroup ["Camada de Infraestrutura"]
+            PromptBuilder[BacklogPromptBuilder]
+            PDFBox[PdfExtractorService]
+            ApiKeyManager[ApiKeyManager]
+            GeminiService[GeminiAiService]
+            MarkdownExport[MarkdownExportService]
+            PdfExport[PdfExportService]
+            CsvExport[CsvExportService]
+            Deserializers[StringListDeserializer]
         end
         
-        subgraph Domain Model
-            Domain[ProductBacklog / Epic / UserStory / Task / Sprint]
+        subgraph DomainLayer ["Camada de Domínio (Java 21 Records)"]
+            DomainEntities["ProductBacklog / Epic / UserStory / Task / Sprint"]
         end
         
-        GeminiService -->|JSON Resposta| Domain
+        AppLayer -->|Extração de PDF| PDFBox
+        AppLayer -->|Construção do Prompt| PromptBuilder
+        AppLayer -->|Orquestração IA| GeminiService
+        GeminiService -->|JSON Resposta| DomainEntities
     end
     
     GeminiService -->|REST HTTPS| GeminiAPI((Google Gemini API))
